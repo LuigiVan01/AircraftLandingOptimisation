@@ -33,7 +33,12 @@ z_g_f_dot  = z(14,1);   % front ground velocity(m/s)
 
 
 %% definisci input
-% DONE BY LUIGIIIIII
+T      =       u(1,1);     % thrust force(N)
+F_r    =       u(2,1);      % brake rear force(N)
+F_fr   =       u(3,1);     % brake front force(N)
+uL     =       u(4,1);      % flap opening 
+uD     =       u(5,1);      % air-brakes opening 
+wind_v =       d(1,1);     % wind velocity
 
 %% equazioni statiche
 
