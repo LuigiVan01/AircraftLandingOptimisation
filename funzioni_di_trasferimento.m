@@ -176,6 +176,6 @@ Lkf = lqr(A.', C.', Q_tilde_LTR, R_tilde).';
 A_kf = A-Lkf*C;
 B_kf = [B-Lkf*D, Lkf];
 C_kf = eye(n);
-D_kf = zeros(n, m+p);
+D_kf = zeros(n, m+p); %Questo è un commento
 poles_sys=eig(A_tilde-B_tilde*Klq);
 poles_kf=eig(A-Lkf*C);
