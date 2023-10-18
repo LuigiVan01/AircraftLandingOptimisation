@@ -2,16 +2,16 @@ function [zdot, F] = aircraft(t, z, u, d, th)
 
 %% definisci costanti th=[]; kground? where we can put it?
 M   = th(1,1);          % mass aircraft
-J   = th(1,2);          % inertia
-m   = th(1,3);          % wheel mass
-k   = th(1,4);          % suspension stiffness
-k_w = th(1,5);          % wheel stiffness
-c   = th(1,6);          % suspension damping
-c_w = th(1,7);          % wheel damping
-S   = th(1,8);          % aircraft surface
-L   = th(1,9);          % aircraft length
-Lr  = th(1,10);         % rear length
-Lf  = th(1,11);         % front length
+J   = th(2,1);          % inertia
+m   = th(3,1);          % wheel mass
+k   = th(4,1);          % suspension stiffness
+k_w = th(5,1);          % wheel stiffness
+c   = th(6,1);          % suspension damping
+c_w = th(7,1);          % wheel damping
+S   = th(8,1);          % aircraft surface
+L   = th(9,1);          % aircraft length
+Lr  = th(10,1);         % rear length
+Lf  = th(11,1);         % front length
 % Cl0, Cd0, Cm0, deltaCl,...? where to put...
 % rho = ;              %air density
 
