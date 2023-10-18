@@ -13,7 +13,7 @@ L   = th(1,9);          % aircraft length
 Lr  = th(1,10);         % rear length
 Lf  = th(1,11);         % front length
 % Cl0, Cd0, Cm0, deltaCl,...? where to put...
-% rho = ;   %air density
+% rho = ;              %air density
 
 %% definisci stati
 X          = z(1,1);    % inertial X position (m)
@@ -33,12 +33,12 @@ z_g_f_dot  = z(14,1);   % front ground velocity(m/s)
 
 
 %% definisci input
-T      =       u(1,1);     % thrust force(N)
-F_r    =       u(2,1);      % brake rear force(N)
-F_fr   =       u(3,1);     % brake front force(N)
-uL     =       u(4,1);      % flap opening 
-uD     =       u(5,1);      % air-brakes opening 
-wind_v =       d(1,1);     % wind velocity
+T      =       u(1,1);   % thrust force(N)
+F_r    =       u(2,1);   % brake rear force(N)
+F_fr   =       u(3,1);   % brake front force(N)
+uL     =       u(4,1);   % flap opening 
+uD     =       u(5,1);   % air-brakes opening 
+wind_v =       d(1,1);   % wind velocity
 
 %% equazioni statiche
 
