@@ -14,6 +14,7 @@ Lr  = th(10,1);         % rear length
 Lf  = th(11,1);         % front length
 % Cl0, Cd0, Cm0, deltaCl,...? where to put...
 % rho = ;              %air density
+g=9.81;
 
 %% definisci stati
 X          = z(1,1);    % inertial X position (m)
@@ -28,8 +29,8 @@ z_w_fr     = z(9,1);    % front wheel height (m)
 z_w_fr_dot = z(10,1);   % front wheel velocity(m/s)
 z_g_r      = z(11,1);   % rear ground height(m)
 z_g_r_dot  = z(12,1);   % rear ground velocity(m/s)
-z_g_f      = z(13,1);   % front ground height(m)
-z_g_f_dot  = z(14,1);   % front ground velocity(m/s)
+z_g_fr      = z(13,1);   % front ground height(m)
+z_g_fr_dot  = z(14,1);   % front ground velocity(m/s)
 
 
 %% definisci input
@@ -38,11 +39,38 @@ F_r    =       u(2,1);   % brake rear force(N)
 F_fr   =       u(3,1);   % brake front force(N)
 uL     =       u(4,1);   % flap opening 
 uD     =       u(5,1);   % air-brakes opening 
+Fa_r   =       u(6,1);   % rear active suspension force
+Fa_f   =       u(7,1);   % front active suspension force
 wind_v =       d(1,1);   % wind velocity
+% come consideriamo il momento?
 
 %% equazioni statiche
-
+%L=
+%D=
+%M=
+Fs_r=2*k*(Z-z_w_r-Lr*sin(theta)+DL0)+2*Fa_r+2*c*(Z_dot-z_w_r_dot-Lr*cos(theta)*theta_dot);   % rear suspensions total force
+Fs_fr=k*(Z-z_w_fr+Lf*sin(theta)+DL0)+Fa_f+c*(Z_dot-z_w_f_dot+Lf*cos(theta)*theta_dot);       % front suspension total force
+Fw_r=2*k_w*(z_w_r-z_g_r+DeltaS)+2*c_w*(z_w_r_dot-z_g_r_dot);                                 % rear wheel force
+Fw_fr=k_w*(z_w_fr-z_g_fr+DeltaS)+c_w*(z_w_fr_dot-z_g_fr_dot);                                % front wheel force
 %% equazioni dinamiche del modello
+
+zdot(1,1)=X_dot;                                                           % longitudinal velocity
+zdot(2,1)=-(F_fr+2*F_r)/M-L/M*sin(theta)-D/M*cos(theta)+T/M*cos(theta);    % longitudinal acceleration
+zdot(3,1)=Z_dot;                                                           % vertical velocity
+zdot(4,1)=-g-Fs_r/M-Fs_fr/M-D/M*sin(theta)+L/M*cos(theta)-T/M*sin(theta);  % vertical acceleration
+zdot(5,1)=theta_dot;                                                       % pitch angle rate
+zdot(6,1)=Input_Torque/J-Lf/J*Fs_fr+Lr/J*Fs_r;                             % pitch angle acceleration
+zdot(7,1)=z_w_r_dot;                                                       % rear wheel vertical velocity
+zdot(8,1)=-g+Fs_r/(2*m)-Fw_r/(2*m);                                        % rear wheel vertical acceleration
+zdot(9,1)=z_w_fr_dot;                                                      % front wheel vertical velocity
+zdot(10,1)=-g+Fs_fr/m-Fw_fr/m;                                             % front wheel vertical acceleration
+
+
+
+
+
+
 zdot = ; % output vector of state
-F    = ; % outpuc vector of fores
+F    = ; % outpuc vector of forces
 end
+
