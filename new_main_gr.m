@@ -25,7 +25,7 @@ g = 9.81;
 
 d = 0;
 
-%% Control problem parameterssss
+%% Control problem parameters
 
 Ts          =   0.01;                        % Sampling time
 Tend_gr     =   15;                          % Time horizon
