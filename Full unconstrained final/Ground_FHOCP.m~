@@ -1,0 +1,242 @@
+clear all
+close all
+clc
+
+%% Model parameters
+M = 22e3;
+m = 130;
+J = 100e3;
+k = 6.73e5;
+k_w = 1.59e6;
+c = 4066;
+c_w = 1.43e5;
+L = 10;
+S = 1/2*10^2;
+Lf = 7.76;
+Lr = 1.94;
+T_max = 6e4;
+theta_max = 20/180*pi;
+Brake_max = 2e5;
+Fa_max = 1e5;
+
+th = [M J m k k_w c c_w S L Lr Lf T_max theta_max Brake_max Fa_max]';
+g = 9.81;
+
+d = 0;
+
+%% Control problem parameters
+Ts          =   0.01;                            % Sampling time
+Tend        =   15;                               % Time horizon
+Tend_td     =   1;
+Tend_b      =   14;
+N           =   Tend/Ts;                         % Prediction steps
+N_td        =   Tend_td/Ts;
+N_b         =   Tend_b/Ts;
+ds_u        =   50;
+ds_u_brake        =  70;
+ds_u_touchdown    =  50;
+nz          =   6;
+nu          =   6;
+h_start     =   0;
+x_ref       =   355;
+zdd_w  =   1;
+thdd_w =   1*180/pi;
+Q           =   diag([0;0;0;zdd_w;0;thdd_w]);
+Qf_dot_gr       =   diag([1e3;1e3;1e3;1e3;1e3;1e3]);
+Qf_gr           =   diag([0;0;1e3;0;1e3;0]);       % Terminal weight
+R           =   zeros(nu*N/ds_u);                  % Input weight
+n_free = 4;
+for i = 1:length(R)
+    if mod(i,nu) == 1
+        R(i,i) = 0;
+    elseif mod(i,nu) == 2
+        R(i,i) = 0;
+    elseif mod(i,nu) == 3
+        R(i,i) = 0;
+    elseif mod(i,nu) == 4
+        R(i,i) = 0;
+    elseif mod(i,nu) == 5 
+        R(i,i) = 0;
+    elseif mod(i,nu) == 0
+        R(i,i) = 0;
+    end
+end
+
+%% Optimization parameters
+myoptions   =   myoptimset;
+myoptions.ls_beta       = 0.3;        
+% myoptions.ls_c          = 0.1;
+% myoptions.tolgrad    	=	1e-6;
+% myoptions.tolfun    	=	1e-12;
+% myoptions.tolX       	=	1e-12;
+% normal
+myoptions.gradmethod    = 'CD';
+myoptions.graddx        = 2^-17;
+% user provided
+% myoptions.gradmethod    = 'UP';
+% myoptions.graddx        = eps^(1/3);
+myoptions.nitermax      = 50;
+myoptions.Hessmethod    = 'BFGS';
+myoptions.BFGS_gamma  	= 1e-1;
+myoptions.GN_sigma      = 1e-3;
+myoptions.GN_funF       = @(X)Ground_cost_GN(X,n_free,nu,d,Ts,Tend_td,Tend_b,ds_u_touchdown,ds_u_brake,Q,R,Qf_gr,Qf_dot_gr,x_ref,th);
+
+%% Initial guess
+% load('initialguess_gr.mat');
+% X0 = Xstar;
+X0 = zeros(n_free + nu*N,1);
+
+%% Running the optimization routine
+tic
+ [Xstar,fxstar] = myfminunc(@(X)Ground_cost(X,n_free,nu,d,Ts,Tend_td,Tend_b,ds_u_touchdown,ds_u_brake,Q,R,Qf_gr,Qf_dot_gr,x_ref,th),X0,myoptions);
+%[Xstar,fxstar] = fminunc(@(X)Ground_cost(X,n_free,nu,d,Ts,Tend_td,Tend_b,ds_u_touchdown,ds_u_brake,Q,R,Qf_gr,Qf_dot_gr,x_ref,th),X0);
+toc
+
+U0_td = zeros(nu*N_td/ds_u_touchdown,1);
+U0_bp = zeros(nu*N_b/ds_u_brake,1);
+u_star_td = Xstar(n_free+1:n_free+length(U0_td),1);
+u_star_b = Xstar(n_free+length(U0_td)+1:end,1);
+z0_star =    [0;
+              Xstar(1,1); 
+              0; 
+              Xstar(2,1); 
+              Xstar(3,1);
+              Xstar(4,1)];
+z0_PRINT =   [0;
+              Xstar(1,1); 
+              0; 
+              Xstar(2,1); 
+              180/pi*Xstar(3,1);
+              180/pi*Xstar(4,1)] 
+          
+%% Save the result for the new (improved) initial guess
+%save initialguess_gr.mat Xstar
+
+%% Checking the cost fucntion values
+F = Ground_cost_GN(Xstar,n_free,nu,d,Ts,Tend_td,Tend_b,ds_u_touchdown,ds_u_brake,Q,R,Qf_gr,Qf_dot_gr,x_ref,th);
+F_state = F(1:nz*N,1);
+F_final_state = F(nz*N+1:nz*(N+1),1)
+F_final_dot = F(nz*(N+1)+1:nz*(N+2),1)
+F_barrier = F(nz*(N+2)+1:end,1);
+
+[~,z_sim] = Ground_cost_GN(Xstar,n_free,nu,d,Ts,Tend_td,Tend_b,ds_u_touchdown,ds_u_brake,Q,R,Qf_gr,Qf_dot_gr,x_ref,th);
+zsim = zeros(nz,N+1);
+for ind = 1:N+1
+    zsim(:,ind) = z_sim((ind-1)*nz+1:ind*nz,1);
+end
+
+%% Simulation of the results
+z = zeros(nz,N+1);
+zd = zeros(nz,N+1);
+z(:,1) = z0_star;
+i = 1;
+time = 1:N+1;
+Nu = nu*N/ds_u;
+u = zeros(nu,N);
+
+% RK2 simulation
+u_check = zeros(nu,1);
+for i = 1:N_td/ds_u_touchdown
+    u_check = u_star_td((i-1)*nu+1:i*nu,1);
+    for ind = (i-1)*ds_u_touchdown+2:i*ds_u_touchdown+1
+        z_dot = ground2(0, z(:,ind-1), u_check, d, th);
+        u(:,ind-1) = u_check;
+        zd(:,ind) = z_dot;
+        z_prime = z(:,ind-1) + Ts/2*z_dot;
+        z(:,ind) = z(:,ind-1) + Ts*ground2(0, z_prime, u_check, d, th);
+    end
+end
+
+for i = 1:N_b/ds_u_brake
+    u_check = u_star_b((i-1)*nu+1:i*nu,1);
+    for ind = N_td + (i-1)*ds_u_brake+2:N_td + i*ds_u_brake+1
+        z_dot = ground2(0, z(:,ind-1), u_check, d, th);
+        u(:,ind-1) = u_check;
+        zd(:,ind) = z_dot;
+        z_prime = z(:,ind-1) + Ts/2*z_dot;
+        z(:,ind) = z(:,ind-1) + Ts*ground2(0, z_prime, u_check, d, th);
+    end
+end
+
+%% Plots of the simulation
+
+for j=1:nz
+    figure(j)
+    if j == 5 || j == 6
+        hold on
+        plot(time,180/pi*z(j,:),'b');
+%         plot(time,180/pi*zsim(j,:),'*');
+        plot(time,180/pi*zd(j,:),'r');
+        hold off
+    else
+        hold on
+        plot(time,z(j,:),'b');
+%         plot(time,zsim(j,:),'*');
+        plot(time,zd(j,:),'r');
+        hold off
+    end
+end
+
+%% Plots of the inputs
+for j=1:nu
+    figure(nz+j)
+    plot(u(j,:));
+end
+figure(13)
+hold on
+plot(z(1,:), z(3,:),'g');
+% plot(zsim(1,:), zsim(3,:),'*');
+hold off
+
+% %% barrier tuning for the lift drag input
+% ul_max = 1;
+% ul_min = 0;
+% alpha = 0.01;
+% beta = 7e2;
+% figure
+% i = -0.01:0.0001:1.01;
+% plot(i,alpha^2*exp(-2*beta*(ul_max - i)) + alpha^2*exp(-2*beta*(i - ul_min)));
+
+% %% barrier tuning for the thrust
+% T_max = 10/180*pi;
+% T_min = 2/180*pi;
+% 
+% alpha = 0.001;
+% beta = 9e2;
+% figure
+% hold on
+% i = 1.5/180*pi:0.0001:10.5/180*pi;
+% plot(i,alpha^2*exp(-2*beta*(T_max - i)) + alpha^2*exp(-2*beta*(i - T_min)));
+% plot(i,alpha^2*exp(-2*beta*(T_max - i)));
+% plot(i,alpha^2*exp(-2*beta*(i - T_min)));
+% hold off
+
+%% Animation
+% figure(12)
+% for i=1/Ts:3:Tend/Ts
+%     grid
+% %     subplot 311
+% %     hold on
+% %     plot(z(1,i),z(2,i),'k*', 'linewidth',0.1);
+% %     axis([8450 9150 60 85]);
+% %     hold off
+% %     
+% %     subplot 312
+% %     hold on
+% %     plot(z(1,i),z(4,i),'b*', 'linewidth',0.1);
+% %     axis([8450 9150 -10 5]);
+% %     hold off
+% %     
+% %     subplot 313
+% %     plot([z(1,i)-Lr*cos(z(5,i)) z(1,i)+Lf*cos(z(5,i))],...
+% %         [z(3,i)-Lr*sin(z(5,i)) z(3,i)+Lf*sin(z(5,i))],'-k*', 'linewidth',1);
+% %     title(['Time: ' num2str((i-1)*Ts) ' s'])
+% %     axis([z(1,i)-20 z(1,i)+25 z(3,i)-10 z(3,i)+10]);
+% %     pause(1e-3);
+%       plot([z(1,i)-Lr*cos(z(5,i)) z(1,i)+Lf*cos(z(5,i))],...
+%         [z(3,i)-Lr*sin(z(5,i)) z(3,i)+Lf*sin(z(5,i))],'-k*', 'linewidth',1);
+%       title(['Time: ' num2str((i-1)*Ts) ' s'])
+%       axis([z(1,i)-2 z(1,i)+8 z(3,i)-2 z(3,i)+2]);
+%       pause(1e-3);
+%       
+% end
