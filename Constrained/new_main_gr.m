@@ -96,24 +96,34 @@ d_rate_lim  = zeros(2*length(U0),1);                % initialization
 d_bound     = zeros(2*length(U0),1);                % initialization
 d_start     = zeros(2*nu_gr,1);                     % initialization
 
-Nu_gr = zeros(nu_gr,1);                         % number of samples for each input
+Nu_gr = zeros(nu_gr,1);                         % Vector containing the number of samples for each input
 
-l = 0;                                          % ending of each input block in the matrix  
-fin = 0;                                        % start of each input block in the matrix
+l = 0;                                          % ending of each input group in the matrix  
+fin = 0;                                        % start of each input group in the matrix
+
+% One iteration for each input
 for i = 1:nu_gr
-    Nu_gr(i,1) = N_gr/ds_u_gr(i,1);                
-    l = l + 2*Nu_gr(i,1);
+    Nu_gr(i,1) = N_gr/ds_u_gr(i,1);             % Compute the number of samples for the input 
+    l = l + 2*Nu_gr(i,1);                       % Ending index
     
-    % Rate limiter
+    %% Rate limiter
+
+    % Compute the matrix representing the rate limiter for the specific input group
     C_rate_lim(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
-        gen_rate_lim_mat(Nu_gr(i,1));
-    d_rate_lim(fin+1:l,1) = rate_bound(i,1)*ones(2*Nu_gr(i,1),1);
-    
+        gen_rate_lim_mat(Nu_gr(i,1)); 
+
+    % Compute the matrix representing the known term of the rate limiter 
+    d_rate_lim(fin+1:l,1) = rate_bound(i,1)*ones(2*Nu_gr(i,1),1); 
+
+    %% Lower and upper bounds on the inputs
+
     % Upper and lower bound for the input
     C_bound(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
         [-eye(Nu_gr(i,1)); eye(Nu_gr(i,1))];
     d_bound(fin+1:l,1) = [-ub_input(i,1)*ones(Nu_gr(i,1),1); lb_input(i,1)*ones(Nu_gr(i,1),1)];
     
+    %% Rate limiter on the first 
+
     % starter rate limiter bound
     C_start(i,length(z0_free)+fin/2+1) = 1;
     C_start(i+nu_gr,length(z0_free)+fin/2+1) = -1;
@@ -123,12 +133,23 @@ for i = 1:nu_gr
     fin = fin + 2*Nu_gr(i,1);
 end
 
+% Matrix representing the upper and lower bound for the initial conditions
+
 C_in_cond = [-eye(n_free), zeros(n_free,length(U0));
-              eye(n_free), zeros(n_free,length(U0))];
+              eye(n_free), zeros(n_free,length(U0))]; 
          
 % Final matrix with rate limiter
-C = [C_rate_lim; C_start; C_bound; C_in_cond];
-d = [-d_rate_lim; -d_start; d_bound; -ub; lb;];
+
+C = [C_rate_lim; 
+     C_start; 
+     C_bound; 
+     C_in_cond];
+
+d = [-d_rate_lim; 
+     -d_start; 
+      d_bound; 
+      -ub; 
+       lb;];
 
 % Final matrix without rate limiter
 % C = [C_bound; C_in_cond];

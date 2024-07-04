@@ -15,7 +15,7 @@ ds_Faf = ds_u(6,1);
 
 tol = 5e-3;
 
-% Input sequence decomposition
+% Divide the input vector U in the different inputs 
 fin = 0;
 T = U(fin+1:fin+N/ds_T,1);
 fin = fin + N/ds_T;

@@ -29,13 +29,14 @@ d = 0;
 Ts          =   0.01;                        % Sampling time
 Tend_gr     =   15;                          % Time horizon
 N_gr        =   Tend_gr/Ts;                  % Prediction steps
-T_pred      =   3;
-N_pred      =   T_pred/Ts;
-N_mpc       =   100;
 
-ds_T        = 500;
-ds_L        = 150;
-ds_D        = 150;
+T_pred      =   3;                          % Window of prediction
+N_pred      =   T_pred/Ts;                  % Number of opt. var. per MPC iteration
+N_mpc       =   100;                        % Number of MPC iterations
+
+ds_T        = 100;
+ds_L        = 100;
+ds_D        = 100;
 ds_B        = 75;
 ds_Far      = 15;
 ds_Faf      = 15;
@@ -62,10 +63,10 @@ n_free = 0;                                         % Degree of freedom in the i
 %% Initial Guess
 
 z0_free = [95; -0.5; 3*pi/180; -3*pi/180];          % [hor_speed; vert_speed; pitch; pitch_speed]
-T0 = 0.1*rand(1,1)*ones(N_pred/ds_u_gr(1,1),1);
+T0 = 0.1*ones(N_pred/ds_u_gr(1,1),1);
 L0 = 0*ones(N_pred/ds_u_gr(2,1),1);
-D0 = 0.5*rand(1,1)*ones(N_pred/ds_u_gr(3,1),1);
-B0 = 0.5*rand(1,1)*ones(N_pred/ds_u_gr(4,1),1);
+D0 = 0.5*ones(N_pred/ds_u_gr(3,1),1);
+B0 = 0.5*ones(N_pred/ds_u_gr(4,1),1);
 Far0 = zeros(N_pred/ds_u_gr(5,1),1);
 Faf0 = zeros(N_pred/ds_u_gr(6,1),1);
 
@@ -104,47 +105,37 @@ d_start = zeros(2*nu_gr,1);                     % initialization
 
 Nu_pred = zeros(nu_gr,1);                         % number of samples for each input
 
-% Rate Limiter for each input
-C_rate_lim = zeros(2*length(U0),length(X0));    % initialization
-C_bound = zeros(2*length(U0),length(X0));       % initialization
-C_start = zeros(2*nu_gr,length(X0));            % initialization
-d_rate_lim = zeros(2*length(U0),1);             % initialization
-d_bound = zeros(2*length(U0),1);                % initialization
-d_start = zeros(2*nu_gr,1);                     % initialization
-
-Nu_gr = zeros(nu_gr,1);                         % number of samples for each input
-
 l = 0;                                          % ending of each input block in the matrix  
 fin = 0;                                        % start of each input block in the matrix
 for i = 1:nu_gr
-    Nu_gr(i,1) = N_gr/ds_u_gr(i,1);                
-    l = l + 2*Nu_gr(i,1);
-    
+    Nu_pred(i,1) = N_pred/ds_u_gr(i,1);                
+    l = l + 2*Nu_pred(i,1);
+
     % Rate limiter
-    C_rate_lim(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
-        gen_rate_lim_mat(Nu_gr(i,1));
-    d_rate_lim(fin+1:l,1) = rate_bound(i,1)*ones(2*Nu_gr(i,1),1);
-    
+    C_rate_lim(fin+1:l,fin/2+1:l/2) = ...
+        gen_rate_lim_mat(Nu_pred(i,1));
+    d_rate_lim(fin+1:l,1) = rate_bound(i,1)*ones(2*Nu_pred(i,1),1);
+
     % Upper and lower bound for the input
-    C_bound(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
-        [-eye(Nu_gr(i,1)); eye(Nu_gr(i,1))];
-    d_bound(fin+1:l,1) = [-ub_input(i,1)*ones(Nu_gr(i,1),1); lb_input(i,1)*ones(Nu_gr(i,1),1)];
-    
+    C_bound(fin+1:l,fin/2+1:l/2) = ...
+        [-eye(Nu_pred(i,1)); eye(Nu_pred(i,1))];
+    d_bound(fin+1:l,1) = [-ub_input(i,1)*ones(Nu_pred(i,1),1); lb_input(i,1)*ones(Nu_pred(i,1),1)];
+
     % starter rate limiter bound
-    C_start(i,length(z0_free)+fin/2+1) = 1;
-    C_start(i+nu_gr,length(z0_free)+fin/2+1) = -1;
-    d_start(i,1) = rate_start(i,1);
-    d_start(i+nu_gr,1) = rate_start(i,1);
-    
-    fin = fin + 2*Nu_gr(i,1);
+    %C_start(i,fin/2+1) = 1;
+    %C_start(i+nu_gr,fin/2+1) = -1;
+    %d_start(i,1) = rate_start(i,1);
+    %d_start(i+nu_gr,1) = rate_start(i,1);
+
+    fin = fin + 2*Nu_pred(i,1);
 end
 
-C_in_cond = [-eye(n_free), zeros(n_free,length(U0));
-              eye(n_free), zeros(n_free,length(U0))];
+%C_in_cond = [-eye(n_free), zeros(n_free,length(U0));
+%              eye(n_free), zeros(n_free,length(U0))];
          
 % Final matrix with rate limiter
-C = [C_rate_lim; C_start; C_bound; C_in_cond];
-d = [-d_rate_lim; -d_start; d_bound; -ub; lb;];
+C = [C_rate_lim; C_bound];
+d = [-d_rate_lim; d_bound];
 
 % Final matrix without rate limiter
 % C = [C_bound; C_in_cond];
@@ -168,7 +159,7 @@ z0_new = z0;
 % Initialize solver options
 myoptions               =   myoptimset;
 myoptions.Hessmethod  	=	'GN';
-myoptions.GN_funF       =	@(X_gr)new_Ground_cost_GN(X_gr,z0_new,nu_gr,nz,d,Ts,Tend_gr,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th);;
+myoptions.GN_funF       =	@(X_gr)new_Ground_cost_GN_mpc(X_gr,z0_new,nu_gr,nz,d,Ts,T_pred,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th);
 myoptions.gradmethod  	=	'CD';
 myoptions.graddx        =	2^-17;
 myoptions.tolgrad    	=	1e-8;
