@@ -131,7 +131,7 @@ ylabel('$\ddot{\theta}$ [deg]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(7)
-plot(z(1,:), z(3,:));
+plot(z(1,:), z(3,:),'k');
 grid
 title('Trajectory','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
@@ -233,23 +233,20 @@ ylabel('$\theta_in$ [deg]','Interpreter','latex','FontSize',13);
 figure(12)
 plot(time(1:end-1),Brake_max*B_real);
 grid
-title('Brake Force','Interpreter','latex','FontSize',13);
-xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('$F_B$ [N]','Interpreter','latex','FontSize',13);
+title('Brake Force',"Interpreter","Latex");
+xlabel('Time',"Interpreter","Latex");
 
 figure(13)
 plot(time(1:end-1),Fa_max*Faf_real);
 grid
-title('Rear Active suspension Force','Interpreter','latex','FontSize',13);
-xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('$F_{Ar}$ [N]','Interpreter','latex','FontSize',13);
+title('Rear Active suspension Force',"Interpreter","Latex");
+xlabel('Time',"Interpreter","Latex");
 
 figure(14)
 plot(time(1:end-1),Fa_max*Faf_real);
 grid
-title('Front Active suspension Force','Interpreter','latex','FontSize',13);
-xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('$F_{Afr}$ [N]','Interpreter','latex','FontSize',13);
+title('Front Active suspension Force',"Interpreter","Latex");
+xlabel('Time',"Interpreter","Latex");
 
 %% Other Plots
 

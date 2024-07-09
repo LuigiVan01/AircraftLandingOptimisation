@@ -298,99 +298,121 @@ time = 0:Ts:Tend;
 
 figure(1)
 hold on
-plot(time,z(1,:),'b','DisplayName','position');
-plot(time,zd(1,:),'r','DisplayName','speed');
+plot(time,z(1,:));
+plot(time,zd(1,:));
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
 grid 
-title('Horizontal position overview')
-xlabel('Time');
+legend('$X$','$\dot{X}$','Interpreter','latex','FontSize',13);
+title('Longitudinal position and velocity','Interpreter','latex','FontSize',13);
 hold off
 
 figure(2)
 hold on
-plot(time,z(2,:),'b','DisplayName','speed');
-plot(time,zd(2,:),'r','DisplayName','acceleration');
+plot(time,z(2,:));
+plot(time,zd(2,:));
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
 grid 
-title('Horizontal speed overview')
-xlabel('Time');
+legend('$\dot{X}$','$\ddot{X}$','Interpreter','latex','FontSize',13);
+title('Longitudinal speed and acceleration','Interpreter','latex','FontSize',13)
 hold off
 
 figure(3)
 hold on
-plot(time,z(3,:),'b','DisplayName','position');
-plot(time,zd(3,:),'r','DisplayName','speed');
+plot(time,z(3,:));
+plot(time,zd(3,:));
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
 grid 
-title('Vertical position overview')
-xlabel('Time');
+legend('$Z$','$\dot{Z}$','Interpreter','latex','FontSize',13);
+title('Vertical position and velocity','Interpreter','latex','FontSize',13)
 hold off
 
 figure(4)
 hold on
-plot(time,z(4,:),'b','DisplayName','speed');
-plot(time,zd(4,:),'r','DisplayName','acceleration');
+% plot(time,z(4,:),'DisplayName','speed');
+plot(time,zd(4,:));
 grid 
-title('Vertical acceleration overview')
-xlabel('Time');
+title('Vertical acceleration','Interpreter','latex','FontSize',13)
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$\ddot{Z}$ [$ms^{-2}$]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(5)
 hold on
-plot(time,180/pi*z(5,:),'b','DisplayName','position');
-plot(time,180/pi*zd(5,:),'r','DisplayName','speed');
+plot(time,180/pi*z(5,:));
+% plot(time,180/pi*zd(5,:),'r','DisplayName','speed');
 grid 
-title('Pitch overview')
-xlabel('Time');
+title('Pitch angle','Interpreter','latex','FontSize',13)
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$\theta$ [deg]','Interpreter','latex','FontSize',13)
 hold off
 
 figure(6)
 hold on
-plot(time,180/pi*z(6,:),'b','DisplayName','speed');
-plot(time,180/pi*zd(6,:),'r','DisplayName','acceleration');
+% plot(time,180/pi*z(6,:),'DisplayName','speed');
+plot(time,180/pi*zd(6,:));
 grid 
-title('Pitch acceleration overview')
-xlabel('Time');
+title('Pitch acceleration','Interpreter','latex','FontSize',13)
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$\ddot{\theta}$ [deg]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(7)
-plot(z(1,:), z(3,:),'g');
+plot(z(1,:), z(3,:));
 grid
-title('Trajectory')
+title('Trajectory','Interpreter','latex','FontSize',13)
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('X [m]','Interpreter','latex','FontSize',13);
 
 %% Plot of the Inputs
 
 figure(8)
 plot(time(1:end-1),T_max*u(1,:));
-title('Thrust');
-xlabel('Time');
+grid
+title('Thrust','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$T$ [N]','Interpreter','latex','FontSize',13);
 
 figure(9)
 plot(time(1:end-1),u(2,:));
-title('Lift Coefficient');
-xlabel('Time');
+grid
+title('Lift Coefficient','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$u_L$','Interpreter','latex','FontSize',13);
 
 figure(10)
 plot(time(1:end-1),u(3,:));
-title('Drag Coefficient');
-xlabel('Time');
+grid
+title('Drag Coefficient','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$u_D$','Interpreter','latex','FontSize',13);
 
 figure(11)
 plot(time(1:end-1),theta_max/pi*180*u(4,:));
-title('Pitch reference');
-xlabel('Time');
+grid
+title('Pitch reference','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$\theta_in$ [deg]','Interpreter','latex','FontSize',13);
 
 figure(12)
 plot(time(1:end-1),Brake_max*u(5,:));
-title('Brake Force');
-xlabel('Time');
+grid
+title('Brake Force','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$F_B$ [N]','Interpreter','latex','FontSize',13);
 
 figure(13)
 plot(time(1:end-1),Fa_max*u(6,:));
-title('Rear Active suspension Force');
-xlabel('Time');
+grid
+title('Rear Active suspension Force','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$F_{Ar}$ [N]','Interpreter','latex','FontSize',13);
 
 figure(14)
 plot(time(1:end-1),Fa_max*u(7,:));
-title('Front Active suspension Force');
-xlabel('Time');
+grid
+title('Front Active suspension Force','Interpreter','latex','FontSize',13);
+xlabel('Time [s]','Interpreter','latex','FontSize',13);
+ylabel('$F_{Afr}$ [N]','Interpreter','latex','FontSize',13);
 
 
 
