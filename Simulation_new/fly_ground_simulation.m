@@ -67,10 +67,9 @@ u_gr = [T0; L0; D0; B0; Far0; Faf0];
 
 %% RK2 Simulation
 
-zsim = zeros(nz*(N+1),1);
-zsim(1:nz,1) = z0;
-height = zeros(N,1);
-zd = zeros(nz*(N+1),1);
+zsim = zeros(nz,N);
+zsim(:,1) = z0;
+zd = zeros(nz,N);
 ztemp = z0;
 flag = 0;
  
@@ -83,8 +82,8 @@ tic
         zprime                              =   ztemp + Ts/2*zdot;
         ztemp                               =   ztemp+Ts*fly2(0,zprime,...
                                                 u_fl,d,th);
-        zsim((ind-1)*nz+1:ind*nz,1)         =   ztemp;
-        zd((ind-1)*nz+1:ind*nz,1)           =   zdot;
+        zsim(:,ind)         =   ztemp;
+        zd(:,ind)           =   zdot;
 
         % if ind > 9*N/10 && ind ~= N+1      % the reason for that is explained in the flight main script
         %  height(ind-1,1)                       =   ztemp(3,1);
@@ -100,21 +99,12 @@ tic
         zprime                              =   ztemp + Ts/2*zdot;
         ztemp                               =   ztemp+Ts*ground2(0,zprime,...
                                                 u_gr,d,th);
-        zsim((ind-1)*nz+1:ind*nz,1)         =   ztemp;
-        zd((ind-1)*nz+1:ind*nz,1)           =   zdot;
+        zsim(:,ind)         =   ztemp;
+        zd(:,ind)           =   zdot;
 
      end
  end
 t_RK2=toc;
-
-z = zeros(nz, N+1);
-z_d = zeros(nz, N+1);
-
-for ind = 1:N+1
-    z(:,ind) = zsim((ind-1)*nz+1:ind*nz);
-    z_d(:,ind) = zd((ind-1)*nz+1:ind*nz);
-end
-
 
 %% ode45 Simulation 
 
@@ -164,8 +154,8 @@ time = 0:Ts:Tend_fl;
 
 figure(1)
 hold on
-plot(time,z(1,:),'b','DisplayName','position RK2');
-plot(time,z_d(1,:),'r','DisplayName','speed RK2');
+plot(time,zsim(1,:),'b','DisplayName','position');
+plot(time,zd(1,:),'r','DisplayName','speed');
 % plot(time,z_ode45(1,:),'b','DisplayName','position');
 % plot(time,z_d_ode45(1,:),'r','DisplayName','speed');
 grid
@@ -176,8 +166,8 @@ hold off
 
 figure(2)
 hold on
-plot(time,z(2,:),'b','DisplayName','speed');
-plot(time,z_d(2,:),'r','DisplayName','acceleration');
+plot(time,zsim(2,:),'b','DisplayName','speed');
+plot(time,zd(2,:),'r','DisplayName','acceleration');
 grid 
 legend
 title('Horizontal speed overview',"Interpreter","Latex")
@@ -186,8 +176,8 @@ hold off
 
 figure(3)
 hold on
-plot(time,z(3,:),'b','DisplayName','position');
-plot(time,z_d(3,:),'r','DisplayName','speed');
+plot(time,zsim(3,:),'b','DisplayName','position');
+plot(time,zd(3,:),'r','DisplayName','speed');
 grid 
 legend
 title('Vertical position overview',"Interpreter","Latex")
@@ -196,8 +186,8 @@ hold off
 
 figure(4)
 hold on
-plot(time,z(4,:),'b','DisplayName','speed');
-plot(time,z_d(4,:),'r','DisplayName','acceleration');
+plot(time,zsim(4,:),'b','DisplayName','speed');
+plot(time,zd(4,:),'r','DisplayName','acceleration');
 grid
 legend
 title('Vertical acceleration overview',"Interpreter","Latex")
@@ -206,8 +196,8 @@ hold off
 
 figure(5)
 hold on
-plot(time,180/pi*z(5,:),'b','DisplayName','position');
-plot(time,180/pi*z_d(5,:),'r','DisplayName','speed');
+plot(time,180/pi*zsim(5,:),'b','DisplayName','position');
+plot(time,180/pi*zd(5,:),'r','DisplayName','speed');
 grid 
 legend
 title('Pitch overview',"Interpreter","Latex")
@@ -216,8 +206,8 @@ hold off
 
 figure(6)
 hold on
-plot(time,180/pi*z(6,:),'b','DisplayName','speed');
-plot(time,180/pi*z_d(6,:),'r','DisplayName','acceleration');
+plot(time,180/pi*zsim(6,:),'b','DisplayName','speed');
+plot(time,180/pi*zd(6,:),'r','DisplayName','acceleration');
 grid 
 legend
 title('Pitch acceleration overview',"Interpreter","Latex")
@@ -225,6 +215,6 @@ xlabel('Time',"Interpreter","Latex");
 hold off
 
 figure(7)
-plot(z(1,:), z(3,:),'k');
+plot(zsim(1,:), zsim(3,:),'k');
 grid
 title('Trajectory',"Interpreter","Latex")
