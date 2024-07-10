@@ -107,7 +107,7 @@ plot(time,z_d(4,:));
 grid 
 title('Vertical acceleration','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('$\ddot{Z}$ [$ms^{-2}$]','Interpreter','latex','FontSize',13);
+ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(5)
@@ -127,15 +127,15 @@ plot(time,180/pi*z_d(6,:));
 grid 
 title('Pitch acceleration','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('$\ddot{\theta}$ [deg]','Interpreter','latex','FontSize',13);
+ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(7)
 plot(z(1,:), z(3,:));
 grid
 title('Trajectory','Interpreter','latex','FontSize',13)
-xlabel('Time [s]','Interpreter','latex','FontSize',13);
-ylabel('X [m]','Interpreter','latex','FontSize',13);
+xlabel('X [m]','Interpreter','latex','FontSize',13);
+ylabel('Y [m]','Interpreter','latex','FontSize',13);
 
 %% Plots of the Inputs
 
