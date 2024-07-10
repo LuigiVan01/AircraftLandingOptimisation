@@ -67,9 +67,9 @@ u_gr = [T0; L0; D0; B0; Far0; Faf0];
 
 %% RK2 Simulation
 
-zsim = zeros(nz,N);
+zsim = zeros(nz,N+1);
 zsim(:,1) = z0;
-zd = zeros(nz,N);
+zd = zeros(nz,N+1);
 ztemp = z0;
 flag = 0;
  
@@ -84,10 +84,6 @@ tic
                                                 u_fl,d,th);
         zsim(:,ind)         =   ztemp;
         zd(:,ind)           =   zdot;
-
-        % if ind > 9*N/10 && ind ~= N+1      % the reason for that is explained in the flight main script
-        %  height(ind-1,1)                       =   ztemp(3,1);
-        % end
 
         u_fl(1,ind) = 0.02*u_fl(1,1);
 
@@ -108,45 +104,40 @@ t_RK2=toc;
 
 %% ode45 Simulation 
 
-% zsim_ode45 = zeros(nz*(N+1),1);
-% zsim_ode45(1:nz,1) = z0;
-% height = zeros(N,1);
-% zd = zeros(nz*(N+1),1);
-% ztemp_ode45 = z0;
-% flag = 0;
-% 
-% tic
-% for ind=2:N
-%     if zsim_ode45((ind-2)*nz+3,1) > 1 && flag == 0
-%         ztemp_ode45                           =   ode45(@(t,z)fly2(t,z,u_fl,...
-%                                                0,th),[0 Ts], zsim_ode45((ind-2)*nz+1:(ind-1)*nz,1));
-% 
-%         zsim_ode45((ind-1)*nz+1:ind*nz,1)     =   ztemp_ode45.y(:,end);
-% 
-% 
-%         [zdot_ode45]                          =   fly2(0,ztemp_ode45.y(:,end),u_gr,d,th);
-% 
-%         zd_ode45((ind-1)*nz+1:ind*nz,1)       =   zdot_ode45;
-%     else
-% 
-%         flag=1;
-%         ztemp_ode45                           =   ode45(@(t,z)ground2(t,z,u_gr,...
-%                                                0,th),[0 Ts], zsim_ode45((ind-2)*nz+1:(ind-1)*nz));
-%         zsim_ode45((ind-1)*nz+1:ind*nz,1)     =   ztemp_ode45.y(:,end);
-%         [zdot_ode45]                              =   ground2(0,ztemp_ode45.y(:,end),...
-%                                                       u_gr,d,th);
-%         zd_ode45((ind-1)*nz+1:ind*nz,1)       =   zdot_ode45;
-%     end
-% end
-% t_o45=toc;
-% 
-% z_ode45 = zeros(nz, N+1);
-% z_d_ode45 = zeros(nz, N+1);
-% 
-% for ind = 1:N+1
-%     z_ode45(:,ind) = zsim_ode45((ind-1)*nz+1:ind*nz);
-%     z_d_ode45(:,ind) = zd_ode45((ind-1)*nz+1:ind*nz);
-% end
+zsim_ode45 = zeros(nz,N+1);
+zsim_ode45(:,1) = z0;
+zd_ode45 = zeros(nz,N+1);
+ztemp_ode45 = z0;
+flag = 0;
+
+u_fl(1,1) = 0.5;
+tic
+for ind=2:N+1
+    if zsim_ode45(3,ind-1) > 1 && flag == 0
+        ztemp_ode45                           =   ode45(@(t,z)fly2(t,z,u_fl,...
+                                                  0,th),[0 Ts], zsim_ode45(:,ind-1));
+
+        zsim_ode45(:,ind)                     =   ztemp_ode45.y(:,end);
+
+
+        [zdot_ode45]                          =   fly2(0,ztemp_ode45.y(:,end),u_gr,d,th);
+
+        zd_ode45(:,ind)                       =   zdot_ode45;
+
+        u_fl(1,ind) = 0.02*u_fl(1,1);
+    else
+
+        flag=1;
+        ztemp_ode45                           =   ode45(@(t,z)ground2(t,z,u_gr,...
+                                               0,th),[0 Ts], zsim_ode45(:,ind-1));
+        zsim_ode45(:,ind)                     =   ztemp_ode45.y(:,end);
+        [zdot_ode45]                              =   ground2(0,ztemp_ode45.y(:,end),...
+                                                      u_gr,d,th);
+        zd_ode45(:,ind)                       =   zdot_ode45;
+    end
+end
+t_o45=toc;
+
 
 %% Plot of the States
 
@@ -154,10 +145,10 @@ time = 0:Ts:Tend_fl;
 
 figure(1)
 hold on
-plot(time,zsim(1,:),'b','DisplayName','position');
-plot(time,zd(1,:),'r','DisplayName','speed');
-% plot(time,z_ode45(1,:),'b','DisplayName','position');
-% plot(time,z_d_ode45(1,:),'r','DisplayName','speed');
+plot(time,zsim(1,:),'b','DisplayName','position RK2');
+plot(time,zd(1,:),'r','DisplayName','speed RK2');
+plot(time,zsim_ode45(1,:),'g','DisplayName','position ode45');
+plot(time,zd_ode45(1,:),'m','DisplayName','speed ode45');
 grid
 legend
 title('Horizontal position overview',"Interpreter","Latex")
@@ -166,8 +157,10 @@ hold off
 
 figure(2)
 hold on
-plot(time,zsim(2,:),'b','DisplayName','speed');
-plot(time,zd(2,:),'r','DisplayName','acceleration');
+plot(time,zsim(2,:),'b','DisplayName','speed RK2');
+plot(time,zd(2,:),'r','DisplayName','acceleration RK2');
+plot(time,zsim_ode45(2,:),'g','DisplayName','speed ode45');
+plot(time,zd_ode45(2,:),'m','DisplayName','acceleretion ode45');
 grid 
 legend
 title('Horizontal speed overview',"Interpreter","Latex")
@@ -176,8 +169,10 @@ hold off
 
 figure(3)
 hold on
-plot(time,zsim(3,:),'b','DisplayName','position');
-plot(time,zd(3,:),'r','DisplayName','speed');
+plot(time,zsim(3,:),'b','DisplayName','position RK2');
+plot(time,zd(3,:),'r','DisplayName','speed RK2');
+plot(time,zsim_ode45(3,:),'g','DisplayName','position ode45');
+plot(time,zd_ode45(3,:),'m','DisplayName','speed ode45');
 grid 
 legend
 title('Vertical position overview',"Interpreter","Latex")
@@ -186,8 +181,11 @@ hold off
 
 figure(4)
 hold on
-plot(time,zsim(4,:),'b','DisplayName','speed');
-plot(time,zd(4,:),'r','DisplayName','acceleration');
+plot(time,zsim(4,:),'b','DisplayName','speed RK2');
+plot(time,zd(4,:),'r','DisplayName','acceleration RK2');
+plot(time,zsim_ode45(4,:),'g','DisplayName','speed ode45');
+plot(time,zd_ode45(4,:),'m','DisplayName','acceleretion ode45');
+
 grid
 legend
 title('Vertical acceleration overview',"Interpreter","Latex")
@@ -196,8 +194,10 @@ hold off
 
 figure(5)
 hold on
-plot(time,180/pi*zsim(5,:),'b','DisplayName','position');
-plot(time,180/pi*zd(5,:),'r','DisplayName','speed');
+plot(time,180/pi*zsim(5,:),'b','DisplayName','position RK2');
+plot(time,180/pi*zd(5,:),'r','DisplayName','speed RK2');
+plot(time,180/pi*zsim_ode45(5,:),'g','DisplayName','position ode45');
+plot(time,180/pi*zd_ode45(5,:),'m','DisplayName','speed ode45');
 grid 
 legend
 title('Pitch overview',"Interpreter","Latex")
@@ -208,6 +208,8 @@ figure(6)
 hold on
 plot(time,180/pi*zsim(6,:),'b','DisplayName','speed');
 plot(time,180/pi*zd(6,:),'r','DisplayName','acceleration');
+plot(time,180/pi*zsim_ode45(6,:),'g','DisplayName','speed ode45');
+plot(time,180/pi*zd_ode45(6,:),'m','DisplayName','acceleretion ode45');
 grid 
 legend
 title('Pitch acceleration overview',"Interpreter","Latex")
@@ -215,6 +217,9 @@ xlabel('Time',"Interpreter","Latex");
 hold off
 
 figure(7)
-plot(zsim(1,:), zsim(3,:),'k');
+hold on
+plot(zsim(1,:), zsim(3,:),'k','DisplayName','Trajectory RK2');
+plot(zsim_ode45(1,:), zsim_ode45(3,:),'g','DisplayName','Trajectory ode45');
+legend
 grid
 title('Trajectory',"Interpreter","Latex")
