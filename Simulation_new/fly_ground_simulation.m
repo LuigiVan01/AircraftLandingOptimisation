@@ -229,3 +229,18 @@ plot(zsim_ode45(1,:), zsim_ode45(3,:),'r','DisplayName','Trajectory ode45');
 legend
 grid
 title('Trajectory',"Interpreter","Latex")
+%% Error calcluation
+
+diff_vector = zd_ode45 - zd;
+
+% Compute the norms
+norm_diff = norm(diff_vector);  % Norm of the difference vector
+norm_zd_ode45 = norm(zd_ode45);             % Norm of the zd vector
+
+% Calculate the relative error
+relative_error = norm_diff / norm_zd_ode45;
+
+% Display the relative error
+disp(['The relative error is: ', num2str(relative_error)]);
+
+
