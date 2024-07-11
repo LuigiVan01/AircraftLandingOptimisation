@@ -151,15 +151,15 @@ time = 0:Ts:Tend_fl;
 
 figure(1)
 hold on
-plot(time,zsim(1,:),'b','DisplayName','Position RK2');
+plot(time,zsim(1,:),'b','DisplayName','position RK2');
 %plot(time,zd(1,:),'r','DisplayName','speed RK2');
-plot(time,zsim_ode45(1,:),'g','DisplayName','Position ode45', 'LineStyle','--');
+plot(time,zsim_ode45(1,:),'g','DisplayName','position ode45');
 %plot(time,zd_ode45(1,:),'c','DisplayName','speed ode45');
 grid
-legend('Interpreter','latex','FontSize',13)
+legend
 title('Horizontal position overview',"Interpreter","Latex","FontSize",13)
 xlabel('Time [s]', 'Interpreter','latex','FontSize',13);
-ylabel('X [m]', 'Interpreter','latex','FontSize',13);
+ylabel('X [m]', 'in')
 hold off
 
 figure(2)
@@ -171,7 +171,7 @@ plot(time,zd_ode45(2,:),'c','DisplayName','acceleretion ode45');
 grid 
 legend
 title('Horizontal speed overview',"Interpreter","Latex")
-xlabel('Time [s]',"Interpreter","Latex");
+xlabel('Time',"Interpreter","Latex");
 hold off
 
 figure(3)
