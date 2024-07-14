@@ -112,8 +112,8 @@ hold off
 
 figure(5)
 hold on
-% plot(time,180/pi*z(5,:),'b','DisplayName','position');
-plot(time,180/pi*z_d(5,:));
+plot(time,180/pi*z(5,:),'DisplayName','position');
+% plot(time,180/pi*z_d(5,:));
 grid 
 title('Pitch angle','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
