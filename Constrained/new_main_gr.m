@@ -168,8 +168,8 @@ myoptions.gradmethod  	=	'CD';
 myoptions.graddx        =	2^-17;
 myoptions.tolgrad    	=	1e-6;
 myoptions.tolfun    	=	1e-11;
-myoptions.ls_nitermax   =	2e2;
-myoptions.nitermax      =	2e1;
+myoptions.ls_nitermax   =	20;
+myoptions.nitermax      =	50;
 myoptions.xsequence     =	'on';
 
 
