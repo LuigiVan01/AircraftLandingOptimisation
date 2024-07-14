@@ -31,7 +31,7 @@ nz  =  6;
 %% Parameters
 
 Ts          =   0.01;                        % Sampling time
-Tend_fl     =   15;  
+Tend_fl     =   13;  
 N = Tend_fl/Ts;
 
 
@@ -85,7 +85,7 @@ tic
         zsim(:,ind)         =   ztemp;
         zd(:,ind)           =   zdot;
 
-        %u_fl(1) = 0.02*u_fl(1);
+        u_fl(1) = 0.02*u_fl(1);
 
      else
         flag=1;
@@ -126,7 +126,7 @@ for ind=2:N+1
 
         zd_ode45(:,ind)            =   zdot_ode45;
 
-        %u_fl(1) = 0.02*u_fl(1);
+        u_fl(1) = 0.02*u_fl(1);
     else
 
         flag=1;
