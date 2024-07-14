@@ -293,7 +293,12 @@ for i = 1:N_b/ds_u_b
     end
 end
 
+save z 
+save zd
+save u
+
 %% Plot of the States
+
 time = 0:Ts:Tend;
 
 figure(1)
@@ -329,7 +334,7 @@ hold off
 figure(4)
 hold on
 % plot(time,z(4,:),'DisplayName','speed');
-plot(time,zd(4,:));
+plot(time,zd(4,:),'LineWidth',1.5);
 grid 
 title('Vertical acceleration','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
@@ -338,7 +343,7 @@ hold off
 
 figure(5)
 hold on
-plot(time,180/pi*z(5,:));
+plot(time,180/pi*z(5,:),'LineWidth',1.5);
 % plot(time,180/pi*zd(5,:),'r','DisplayName','speed');
 grid 
 title('Pitch angle','Interpreter','latex','FontSize',13)
@@ -349,7 +354,7 @@ hold off
 figure(6)
 hold on
 % plot(time,180/pi*z(6,:),'DisplayName','speed');
-plot(time,180/pi*zd(6,:));
+plot(time,180/pi*zd(6,:),'LineWidth',1.2);
 grid 
 title('Pitch acceleration','Interpreter','latex','FontSize',13)
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
@@ -357,7 +362,7 @@ ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(7)
-plot(z(1,:), z(3,:));
+plot(z(1,:), z(3,:),'LineWidth',1.5);
 grid
 title('Trajectory','Interpreter','latex','FontSize',13)
 xlabel('X [m]','Interpreter','latex','FontSize',13);

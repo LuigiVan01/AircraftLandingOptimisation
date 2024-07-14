@@ -112,7 +112,7 @@ hold off
 
 figure(5)
 hold on
-plot(time,180/pi*z(5,:),'DisplayName','position');
+plot(time,180/pi*z(5,:),'DisplayName','position','LineWidth',1.5);
 % plot(time,180/pi*z_d(5,:));
 grid 
 title('Pitch angle','Interpreter','latex','FontSize',13)
@@ -131,12 +131,12 @@ ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
 figure(7)
-plot(z(1,:), z(3,:));
+plot(z(1,:), z(3,:),'LineWidth',1.5);
 grid
 title('Trajectory','Interpreter','latex','FontSize',13)
 xlabel('X [m]','Interpreter','latex','FontSize',13);
 ylabel('Y [m]','Interpreter','latex','FontSize',13);
-
+% xlim([0 2300])
 %% Plots of the Inputs
 
 T_real = zeros(Ntot,1);
