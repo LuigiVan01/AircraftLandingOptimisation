@@ -279,7 +279,7 @@ end
 
 for i = 1:N_b/ds_u_b
     u_check(1:nu_gr,1) = u_star_b((i-1)*nu_gr+1:i*nu_gr,1);
-    for ind = N_fl+N_td+(i-1)*ds_u_b+2:N_fl+N_td+i*ds_u_b+1
+    for ind = N_fl+N_td-1+(i-1)*ds_u_b+2:N_fl+N_td+i*ds_u_b+1
         z_dot = ground2(0, z(:,ind-1), u_check(1:nu_gr,1), d, th);
         u(1,ind-1) = u_check(1,1);
         u(2,ind-1) = u_check(2,1);
