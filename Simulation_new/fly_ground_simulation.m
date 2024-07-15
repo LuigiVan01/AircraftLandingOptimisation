@@ -191,22 +191,25 @@ hold off
 figure(4)
 hold on
 %plot(time,zsim(4,:),'b','DisplayName','speed RK2');
-plot(time(1165:end),zd(4,1165:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
+%plot(time(1165:end),zd(4,1165:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
+plot(time(930:end),zd(4,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
 %plot(time,zsim_ode45(4,:),'g','DisplayName','speed ode45');
-plot(time(1165:end),zd_ode45(4,1165:end),'DisplayName','Acceleretion ode45','LineWidth',2,...
+%plot(time(1165:end),zd_ode45(4,1165:end),'DisplayName','Acceleretion ode45','LineWidth',2,...
+    %'LineStyle','--');
+plot(time(930:end),zd_ode45(4,930:end),'DisplayName','Acceleretion ode45','LineWidth',2,...
     'LineStyle','--');
 grid
 legend('FontSize',13,'Interpreter','latex');
 title('Vertical acceleration overview',"Interpreter","Latex",'FontSize',13);
 xlabel('Time [s]',"Interpreter","Latex", 'FontSize',13);
-ylabel('$\dot{Z}$ $[m \cdot s^{-1}]$', 'Interpreter','latex','FontSize',13);
+ylabel('$\ddot{Z}$ $[m \cdot s^{-1}]$', 'Interpreter','latex','FontSize',13);
 hold off
 
 figure(5)
 hold on
-plot(time,180/pi*zsim(5,:),'DisplayName','Pitch RK2', 'LineWidth',2);
+plot(time, zsim(5,:),'DisplayName','Pitch RK2', 'LineWidth',2);
 %plot(time,180/pi*zd(5,:),'r','DisplayName','speed RK2');
-plot(time,180/pi*zsim_ode45(5,:),'DisplayName','Pitch ode45', 'LineWidth',2,...
+plot(time, zsim_ode45(5,:),'DisplayName','Pitch ode45', 'LineWidth',2,...
     'LineStyle','--');
 %plot(time,180/pi*zd_ode45(5,:),'c','DisplayName','speed ode45');
 grid 
@@ -219,9 +222,9 @@ hold off
 figure(6)
 hold on
 %plot(time,180/pi*zsim(6,:),'b','DisplayName','speed RK2');
-plot(time(1167:end) ,180/pi*zd(6,1167:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
+plot(time(930:end) ,zd(6,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
 % plot(time,180/pi*zsim_ode45(6,:),'g','DisplayName','speed ode45');
-plot(time(1167:end) ,180/pi*zd_ode45(6,1167:end),'DisplayName','Acceleretion ode45', 'LineWidth',2,...
+plot(time(930:end) ,zd_ode45(6,930:end),'DisplayName','Acceleretion ode45', 'LineWidth',2,...
     'LineStyle','--');
 grid 
 legend('Interpreter','latex','fontSize', 13)
