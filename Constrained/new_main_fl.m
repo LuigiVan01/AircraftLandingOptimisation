@@ -38,6 +38,11 @@ ds_u_fl = [ds_T, ds_L, ds_D, ds_theta]';     % Downsampling the inputs
 nz          =   6;
 nu_fl       =   4;
 
+%% Landing strip length
+
+x_ref    =   [ 1000  ;        % upper bound
+               1500 ];        % lower bound
+
 %% Initial condition for the Flight operation
 hor_speed_in = 100;
 height_in = 50;
@@ -62,9 +67,9 @@ R_fl        =   1;                                  % Input weight: Thrust && "f
 
 %% Initial Guess
 
-T0 = 0.6*ones(N_fl/ds_u_fl(1,1),1);
-L0 = 1*ones(N_fl/ds_u_fl(2,1),1);
-D0 = 1*ones(N_fl/ds_u_fl(3,1),1);
+T0 = 0*ones(N_fl/ds_u_fl(1,1),1);
+L0 = 0*ones(N_fl/ds_u_fl(2,1),1);
+D0 = 0*ones(N_fl/ds_u_fl(3,1),1);
 th0 = 0*ones(N_fl/ds_u_fl(4,1),1);
 
 U0 = [T0; L0; D0; th0];
@@ -161,14 +166,13 @@ q = N_fl/10;      % number of NL inequality contraints;
 % Initialize solver options
 myoptions               =   myoptimset;
 myoptions.Hessmethod  	=	'GN';
-myoptions.GN_funF       =	@(X_fl)new_Flight_cost_GN(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,th);
+myoptions.GN_funF       =	@(X_fl)new_Flight_cost_GN(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,x_ref, th);
 myoptions.gradmethod  	=	'CD';
 myoptions.graddx        =	2^-17;
 myoptions.tolgrad    	=	1e-8;
 myoptions.ls_nitermax   =	5e2;
 myoptions.nitermax      =	15;
 myoptions.xsequence     =	'on';
- 
 
 % BFGS options
 % myoptions.ls_tkmax      =	1;          

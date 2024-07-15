@@ -42,8 +42,8 @@ nz          =   6;
 nu_gr       =   6;
 
 %% Landing strip length
-x_ref       =   [1000;       % upper bound
-                 700];       % lower bound
+x_ref       =   [ 1700  ;       % upper bound
+                    0  ];       % lower bound
 
 %% Optimization parameters 
 zdd_w       =   1;                                  % weight on vertical acceleration
@@ -51,15 +51,15 @@ thdd_w      =   1*180/pi;                           % weight on pitch accelerati
 Q_dot_gr    =   diag([0;0;0;zdd_w;0;thdd_w]);       % acceleration weighting matrix
 Q_gr        =   diag([0;0;sqrt(1000);0;0;0]);       % state weighting matrix
 R_gr        =   0;                                  % Active suspension weight
-n_free = 4;                                         % Degree of freedom in the initial condition optimization
+n_free      =   4;                                  % Degree of freedom in the initial condition optimization
 
 %% Initial Guess
 
 z0_free = [95; -0.5; 3*pi/180; -3*pi/180];          % [hor_speed; vert_speed; pitch; pitch_speed]
-T0 = 0.1*ones(N_gr/ds_u_gr(1,1),1);
+T0 = 0*ones(N_gr/ds_u_gr(1,1),1);
 L0 = 0*ones(N_gr/ds_u_gr(2,1),1);
-D0 = 0.5*ones(N_gr/ds_u_gr(3,1),1);
-B0 = 0.5*ones(N_gr/ds_u_gr(4,1),1);
+D0 = 0*ones(N_gr/ds_u_gr(3,1),1);
+B0 = 0*ones(N_gr/ds_u_gr(4,1),1);
 Far0 = zeros(N_gr/ds_u_gr(5,1),1);
 Faf0 = zeros(N_gr/ds_u_gr(6,1),1);
 

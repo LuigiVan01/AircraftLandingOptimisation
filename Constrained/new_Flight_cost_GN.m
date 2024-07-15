@@ -1,4 +1,4 @@
-function [F] = new_Flight_cost_GN(X,z0,nu,nz,d,Ts,Tend,ds_u,Q,R,z_ref,th)
+function [F] = new_Flight_cost_GN(X,z0,nu,nz,d,Ts,Tend,ds_u,Q,R,z_ref,x_ref,th)
 
 % Parameters
 N = Tend/Ts;
@@ -86,7 +86,9 @@ index = ones(nu,1);
 ceq = ztemp(2:end) - z_ref(2:end);
 
 % nonlinear inequalities
-c = height(9*N/10+1:N,1);
+c = [   height(9*N/10+1:N,1);
+        ztemp(1,1) - x_ref(1);   % Final position higher than upper bound
+       -ztemp(1,1) + x_ref(2)];  % Final position lower than upper bound
 
 F = [F; ceq; c];
 
