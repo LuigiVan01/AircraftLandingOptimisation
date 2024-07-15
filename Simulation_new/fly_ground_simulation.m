@@ -207,9 +207,9 @@ hold off
 
 figure(5)
 hold on
-plot(time, zsim(5,:),'DisplayName','Pitch RK2', 'LineWidth',2);
+plot(time, 180 / pi * zsim(5,:),'DisplayName','Pitch RK2', 'LineWidth',2);
 %plot(time,180/pi*zd(5,:),'r','DisplayName','speed RK2');
-plot(time, zsim_ode45(5,:),'DisplayName','Pitch ode45', 'LineWidth',2,...
+plot(time, 180 / pi * zsim_ode45(5,:),'DisplayName','Pitch ode45', 'LineWidth',2,...
     'LineStyle','--');
 %plot(time,180/pi*zd_ode45(5,:),'c','DisplayName','speed ode45');
 grid 
@@ -222,15 +222,15 @@ hold off
 figure(6)
 hold on
 %plot(time,180/pi*zsim(6,:),'b','DisplayName','speed RK2');
-plot(time(930:end) ,zd(6,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
+plot(time(930:end) ,180 / pi * zd(6,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
 % plot(time,180/pi*zsim_ode45(6,:),'g','DisplayName','speed ode45');
-plot(time(930:end) ,zd_ode45(6,930:end),'DisplayName','Acceleretion ode45', 'LineWidth',2,...
+plot(time(930:end) , 180 / pi * zd_ode45(6,930:end),'DisplayName','Acceleretion ode45', 'LineWidth',2,...
     'LineStyle','--');
 grid 
 legend('Interpreter','latex','fontSize', 13)
 title('Pitch acceleration overview',"Interpreter","Latex",'FontSize',13)
 xlabel('Time [s]',"Interpreter","Latex", "FontSize",13);
-ylabel('$\ddot{\vartheta}$ $[rad \cdot s^{-2}]$', 'Interpreter', 'latex', FontSize=13);
+ylabel('$\ddot{\vartheta}$ $[deg \cdot s^{-2}]$', 'Interpreter', 'latex', FontSize=13);
 hold off
 
 figure(7)
