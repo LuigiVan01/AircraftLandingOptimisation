@@ -26,6 +26,8 @@ cd0      = 0.12;         % lift coeff. when alpha=0
 gamma    = 0.0435;
 aero_c = 8.3;           % wing aerodynamic chord [m]
 
+M_ver=M+3*m;
+
 %% definisci stati
 X          = z(1,1);    % inertial X position (m)
 X_dot      = z(2,1);    % body x velocity (m/s)
@@ -37,9 +39,9 @@ theta_dot  = z(6,1);    % pitch velocity (rad/s)
 
 %% definisci inputs
 % T      =     u(1,1);    % thrust force(N)
-uT      =     u(1,1);    % thrust force(N)
-uL     =     u(2,1);    % flap opening 
-uD     =     u(3,1);    % air-brakes opening 
+uT          =     u(1,1);     % thrust force(N)
+uL          =     u(2,1);      % flap opening 
+uD          =     u(3,1);      % air-brakes opening 
 % theta_in =   u(4,1);
 u_theta_in =   u(4,1);
 T = uT*T_max;
@@ -66,8 +68,8 @@ Fl = 0.5*rho*S*cl*(v_rel)^2;
 Fd = 0.5*rho*S*cd*(v_rel)^2;
     % equation uploaded with attack angle
 
-X_ddot = 1/M*(T*cos(theta) + Fl*cos(Psi - pi/2) + Fd*cos(Psi));
-Z_ddot = -g + 1/M*(T*sin(theta) + Fl*sin(Psi - pi/2) + Fd*sin(Psi));
+X_ddot = 1/M_ver*(T*cos(theta) + Fl*cos(Psi - pi/2) + Fd*cos(Psi));
+Z_ddot = -g + 1/M_ver*(T*sin(theta) + Fl*sin(Psi - pi/2) + Fd*sin(Psi));
 xi = 0.9;
 wn = 1.5;
 theta_ddot  = -2*wn*xi*theta_dot-theta*wn^2 + wn^2*theta_in;  % aggiugnere rate limiter theta nel mpc
