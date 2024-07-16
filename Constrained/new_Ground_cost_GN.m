@@ -125,8 +125,8 @@ ceq = [zdot;            %Final state derivative equal to zero
 
 % nonlinear inequalities
 
-c = [ -ztemp(1,1)  +  x_ref(1,1) ;   % Final position lower than upperbound
-       ztemp(1,1)  -  x_ref(2,1)];   % Final position higher than lowerbound
+c = [ -ztemp(1,1)  +  x_ref(1,1) ; % Final position lower than upper bound
+       ztemp(1,1)  -  x_ref(2,1)]; % Final position higher than lower bound
 
 F = [F; ceq; c];
 

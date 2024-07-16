@@ -40,8 +40,8 @@ nu_fl       =   4;
 
 %% Landing strip length
 
-x_ref    =   [ 1000  ;        % upper bound
-               1500 ];        % lower bound
+x_ref    =   [ 1000   ;          % lower bound
+               1600 ];           % upper bound
 
 %% Initial condition for the Flight operation
 hor_speed_in = 100;
@@ -67,9 +67,9 @@ R_fl        =   1;                                  % Input weight: Thrust && "f
 
 %% Initial Guess
 
-T0 = 0*ones(N_fl/ds_u_fl(1,1),1);
-L0 = 0*ones(N_fl/ds_u_fl(2,1),1);
-D0 = 0*ones(N_fl/ds_u_fl(3,1),1);
+T0 = 0.6*ones(N_fl/ds_u_fl(1,1),1);
+L0 = 1*ones(N_fl/ds_u_fl(2,1),1);
+D0 = 1*ones(N_fl/ds_u_fl(3,1),1);
 th0 = 0*ones(N_fl/ds_u_fl(4,1),1);
 
 U0 = [T0; L0; D0; th0];

@@ -83,12 +83,12 @@ index = ones(nu,1);
  end
 
 % nonlinear equalities
-ceq = ztemp(2:end) - z_ref(2:end);
+ceq = diag([1,100,1,1,1])*(ztemp(2:end) - z_ref(2:end));
 
 % nonlinear inequalities
 c = [   height(9*N/10+1:N,1);
-        ztemp(1,1) - x_ref(1);   % Final position higher than upper bound
-       -ztemp(1,1) + x_ref(2)];  % Final position lower than upper bound
+        ztemp(1,1) - x_ref(1);    % Final position higher than lower bound
+       -ztemp(1,1) + x_ref(2)];   % Final position lower than upper bound
 
 F = [F; ceq; c];
 

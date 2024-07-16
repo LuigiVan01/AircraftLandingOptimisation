@@ -3,6 +3,7 @@ close all
 clc
 
 %% Model parameters
+
 M = 22e3;
 m = 130;
 J = 100e3;
@@ -48,7 +49,7 @@ x_ref       =   [ 1700  ;       % upper bound
 %% Optimization parameters 
 zdd_w       =   1;                                  % weight on vertical acceleration
 thdd_w      =   1*180/pi;                           % weight on pitch acceleration
-Q_dot_gr    =   diag([0;0;0;zdd_w;0;thdd_w]);       % acceleration weighting matrix
+Q_dot_gr    =   diag([0;1;0;zdd_w;0;thdd_w]);       % acceleration weighting matrix
 Q_gr        =   diag([0;0;sqrt(1000);0;0;0]);       % state weighting matrix
 R_gr        =   0;                                  % Active suspension weight
 n_free      =   4;                                  % Degree of freedom in the initial condition optimization

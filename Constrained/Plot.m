@@ -30,7 +30,7 @@ Ts          =   0.01;                        % Sampling time
 Tend_gr     =   15;                          % Time horizon
 N_gr        =   Tend_gr/Ts;                  % Prediction steps
 
-ds_T        = 500;
+ds_T        = 100;
 ds_L        = 150;
 ds_D        = 150;
 ds_B        = 75;
@@ -298,12 +298,12 @@ xlabel('Time',"Interpreter","Latex");
 
 
 %% Animation
-for i=1/Ts:5:Tend/Ts
-    figure(21)
-     plot([z(1,i)-Lr*cos(z(5,i)) z(1,i)+Lf*cos(z(5,i))],...
-        [z(3,i)-Lr*sin(z(5,i)) z(3,i)+Lf*sin(z(5,i))],'-k*', 'linewidth',1);
-     grid
-     title(['Time: ' num2str((i-1)*Ts) ' s'])
-     axis([z(1,i)-2 z(1,i)+8.5 z(3,i)-3 z(3,i)+3]);
-     pause(1e-3);      
-end
+% for i=1/Ts:5:Tend/Ts
+%     figure(21)
+%      plot([z(1,i)-Lr*cos(z(5,i)) z(1,i)+Lf*cos(z(5,i))],...
+%         [z(3,i)-Lr*sin(z(5,i)) z(3,i)+Lf*sin(z(5,i))],'-k*', 'linewidth',1);
+%      grid
+%      title(['Time: ' num2str((i-1)*Ts) ' s'])
+%      axis([z(1,i)-2 z(1,i)+8.5 z(3,i)-3 z(3,i)+3]);
+%      pause(1e-3);      
+% end
