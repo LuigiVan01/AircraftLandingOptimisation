@@ -167,9 +167,9 @@ myoptions.GN_funF       =	@(X_gr)new_Ground_cost_GN(X_gr,n_free,nu_gr,nz,d,Ts,Te
 myoptions.gradmethod  	=	'CD';
 myoptions.graddx        =	2^-17;
 myoptions.tolgrad    	=	1e-6;
-myoptions.tolfun    	=	1e-11;
-myoptions.ls_nitermax   =	2e2;
-myoptions.nitermax      =	2e1;
+myoptions.tolfun    	=	1e-12;
+myoptions.ls_nitermax   =	20;
+myoptions.nitermax      =	50;
 myoptions.xsequence     =	'on';
 
 

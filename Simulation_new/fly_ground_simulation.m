@@ -151,9 +151,9 @@ time = 0:Ts:Tend_fl;
 
 figure(1)
 hold on
-plot(time,zsim(1,:),'b','DisplayName','Position RK2');
+plot(time,zsim(1,:),'DisplayName','Position RK2', 'LineWidth', 2);
 %plot(time,zd(1,:),'r','DisplayName','speed RK2');
-plot(time,zsim_ode45(1,:),'g','DisplayName','Position ode45', 'LineStyle','--');
+plot(time,zsim_ode45(1,:),'DisplayName','Position ode45', 'LineStyle','--', 'LineWidth',2);
 %plot(time,zd_ode45(1,:),'c','DisplayName','speed ode45');
 grid
 legend('Interpreter','latex','FontSize',13)
@@ -176,10 +176,10 @@ hold off
 
 figure(3)
 hold on
-plot(time,zsim(3,:),'b','DisplayName','Position RK2');
+plot(time,zsim(3,:),'DisplayName','Position RK2', 'linewidth', 2);
 %plot(time,zd(3,:),'r','DisplayName','speed RK2');
-plot(time,zsim_ode45(3,:),'g','DisplayName','Position ode45', 'LineStyle',...
-    '--');
+plot(time,zsim_ode45(3,:),'DisplayName','Position ode45', 'LineStyle',...
+    '--', 'LineWidth',2);
 %plot(time,zd_ode45(3,:),'c','DisplayName','speed ode45');
 grid 
 legend('Interpreter','latex','FontSize',13)
@@ -191,21 +191,26 @@ hold off
 figure(4)
 hold on
 %plot(time,zsim(4,:),'b','DisplayName','speed RK2');
-plot(time(1165:end),zd(4,1165:end),'r','DisplayName','Acceleration RK2');
+%plot(time(1165:end),zd(4,1165:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
+plot(time(930:end),zd(4,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
 %plot(time,zsim_ode45(4,:),'g','DisplayName','speed ode45');
-plot(time(1165:end),zd_ode45(4,1165:end),'c','DisplayName','Acceleretion ode45');
+%plot(time(1165:end),zd_ode45(4,1165:end),'DisplayName','Acceleretion ode45','LineWidth',2,...
+    %'LineStyle','--');
+plot(time(930:end),zd_ode45(4,930:end),'DisplayName','Acceleretion ode45','LineWidth',2,...
+    'LineStyle','--');
 grid
 legend('FontSize',13,'Interpreter','latex');
 title('Vertical acceleration overview',"Interpreter","Latex",'FontSize',13);
 xlabel('Time [s]',"Interpreter","Latex", 'FontSize',13);
-ylabel('$\dot{Z}$ $[m \cdot s^{-1}]$', 'Interpreter','latex','FontSize',13);
+ylabel('$\ddot{Z}$ $[m \cdot s^{-1}]$', 'Interpreter','latex','FontSize',13);
 hold off
 
 figure(5)
 hold on
-plot(time,180/pi*zsim(5,:),'b','DisplayName','position RK2');
+plot(time, 180 / pi * zsim(5,:),'DisplayName','Pitch RK2', 'LineWidth',2);
 %plot(time,180/pi*zd(5,:),'r','DisplayName','speed RK2');
-plot(time,180/pi*zsim_ode45(5,:),'g','DisplayName','position ode45');
+plot(time, 180 / pi * zsim_ode45(5,:),'DisplayName','Pitch ode45', 'LineWidth',2,...
+    'LineStyle','--');
 %plot(time,180/pi*zd_ode45(5,:),'c','DisplayName','speed ode45');
 grid 
 legend('Interpreter','latex','FontSize',13)
@@ -217,21 +222,22 @@ hold off
 figure(6)
 hold on
 %plot(time,180/pi*zsim(6,:),'b','DisplayName','speed RK2');
-plot(time(1167:end) ,180/pi*zd(6,1167:end),'r','DisplayName','acceleration RK2');
+plot(time(930:end) ,180 / pi * zd(6,930:end),'DisplayName','Acceleration RK2', 'LineWidth',2);
 % plot(time,180/pi*zsim_ode45(6,:),'g','DisplayName','speed ode45');
-plot(time(1167:end) ,180/pi*zd_ode45(6,1167:end),'c','DisplayName','acceleretion ode45');
+plot(time(930:end) , 180 / pi * zd_ode45(6,930:end),'DisplayName','Acceleretion ode45', 'LineWidth',2,...
+    'LineStyle','--');
 grid 
 legend('Interpreter','latex','fontSize', 13)
 title('Pitch acceleration overview',"Interpreter","Latex",'FontSize',13)
 xlabel('Time [s]',"Interpreter","Latex", "FontSize",13);
-ylabel('$\ddot{\vartheta}$ $[rad \cdot s^{-2}]$', 'Interpreter', 'latex', FontSize=13);
+ylabel('$\ddot{\vartheta}$ $[deg \cdot s^{-2}]$', 'Interpreter', 'latex', FontSize=13);
 hold off
 
 figure(7)
 hold on
-plot(zsim(1,:), zsim(3,:),'DisplayName','Trajectory RK2');
-plot(zsim_ode45(1,:), zsim_ode45(3,:),'r','DisplayName','Trajectory ode45', ...
-    'LineStyle','--');
+plot(zsim(1,:), zsim(3,:),'DisplayName','Trajectory RK2', 'LineWidth',2);
+plot(zsim_ode45(1,:), zsim_ode45(3,:),'DisplayName','Trajectory ode45', ...
+    'LineStyle','--', 'LineWidth',2);
 xlabel('X [m]', 'Interpreter','latex','FontSize',13)
 ylabel('Z [m]', 'Interpreter','latex','FontSize',13)
 legend('Interpreter','latex','FontSize',13)

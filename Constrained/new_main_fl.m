@@ -169,9 +169,9 @@ myoptions.Hessmethod  	=	'GN';
 myoptions.GN_funF       =	@(X_fl)new_Flight_cost_GN(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,x_ref, th);
 myoptions.gradmethod  	=	'CD';
 myoptions.graddx        =	2^-17;
-myoptions.tolgrad    	=	1e-8;
-myoptions.ls_nitermax   =	5e2;
-myoptions.nitermax      =	15;
+myoptions.tolgrad    	=	1e-6;
+myoptions.ls_nitermax   =	20;
+myoptions.nitermax      =	50;
 myoptions.xsequence     =	'on';
 
 % BFGS options
