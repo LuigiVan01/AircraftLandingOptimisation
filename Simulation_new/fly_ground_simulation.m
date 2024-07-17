@@ -31,7 +31,7 @@ nz  =  6;
 %% Parameters
 
 Ts          =   0.01;                        % Sampling time
-Tend_fl     =   13;  
+Tend_fl     =   23;  
 N = Tend_fl/Ts;
 
 
@@ -47,10 +47,10 @@ z0 = [0; hor_speed_in; height_in; vert_speed_in; pitch_in; pitch_dot_in];
 
 %% Inputs fligh
 
-T0 = 0.5;
+T0 = 0.8;
 L0 = 1;
 D0 = 1;
-th0 = 0.1;
+th0 = 0.2;
 
 u_fl = [T0; L0; D0; th0];
 
@@ -59,7 +59,7 @@ T0 = 0;
 L0 = 0.1;
 D0 = 1;
 B0 = 1;
-Far0 = 0;
+Far0 =0;
 Faf0 =0;
 
 u_gr = [T0; L0; D0; B0; Far0; Faf0];
@@ -75,7 +75,7 @@ flag = 0;
  
 tic
  for ind = 2:N+1
-     if ztemp(3) > 1 && flag == 0
+     if ztemp(3) > 0.1 && flag == 0
 
         [zdot]              =   fly2(0,ztemp,u_fl,d,th);
 
@@ -85,11 +85,8 @@ tic
         zsim(:,ind)         =   ztemp;
         zd(:,ind)           =   zdot;
 
-        u_fl(1) = 0.02*u_fl(1);
-
      else
         flag=1;
-     
         [zdot]              =   ground2(0,ztemp,u_gr,d,th);
 
         zprime              =   ztemp + Ts/2*zdot;
@@ -113,7 +110,7 @@ flag = 0;
 %u_fl(1) = 0.5;
 tic
 for ind=2:N+1
-    if zsim_ode45(3,ind-1) > 1 && flag == 0
+    if zsim_ode45(3,ind-1) > 0.1 && flag == 0
 
         ztemp_ode45                =   ode45(@(t,z)fly2(t,z,u_fl,...
                                        0,th),[0 Ts], zsim_ode45(:,ind-1));
@@ -126,7 +123,6 @@ for ind=2:N+1
 
         zd_ode45(:,ind)            =   zdot_ode45;
 
-        u_fl(1) = 0.02*u_fl(1);
     else
 
         flag=1;
