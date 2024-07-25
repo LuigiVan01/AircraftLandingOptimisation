@@ -1,6 +1,6 @@
 function [zdot, data] = fly2(t, z, u, d, th)
 
-%% definisci costanti th=[]; kground? where we can put it?
+%% Parameters
 M       = th(1,1);      % mass aircraft
 J       = th(2,1);      % inertia
 m       = th(3,1);      % wheel mass
@@ -24,7 +24,6 @@ cl_alpha_max = 3.15;
 cl_alpha_var = 0.2;     % changed, the value we set before was 0.8
 cd0      = 0.12;         % lift coeff. when alpha=0
 gamma    = 0.0435;
-aero_c = 8.3;           % wing aerodynamic chord [m]
 
 M_ver=M+3*m;
 
@@ -38,62 +37,40 @@ theta_dot  = z(6,1);    % pitch velocity (rad/s)
 
 
 %% definisci inputs
-% T      =     u(1,1);    % thrust force(N)
 uT          =     u(1,1);     % thrust force(N)
 uL          =     u(2,1);      % flap opening 
 uD          =     u(3,1);      % air-brakes opening 
-% theta_in =   u(4,1);
 u_theta_in =   u(4,1);
 T = uT*T_max;
 theta_in = u_theta_in*theta_max;
 
-% theta_in = 30/180*pi;
-
 %% Disturbances
 v_wind =     d(1,1);    % wind velocity               
 
-%% equazioni statiche
+%% Equazioni statiche
 
 % code for attack angle
+
 Psi = atan2(-Z_dot, v_wind - X_dot);
 Psi_a = atan((-Z_dot)/(v_wind - X_dot));
 alpha = theta - Psi_a;
 v_rel = sqrt((v_wind - X_dot)^2 + ...
     (-Z_dot)^2);
-% v_rel = v_wind-X_dot;
+
 
 cl = cl0 + (cl_alpha_var + (1-cl_alpha_var)*uL)*cl_alpha_max*alpha;
 cd = cd0*(1+uD)+gamma*cl^2;
 Fl = 0.5*rho*S*cl*(v_rel)^2;
 Fd = 0.5*rho*S*cd*(v_rel)^2;
-    % equation uploaded with attack angle
 
 X_ddot = 1/M_ver*(T*cos(theta) + Fl*cos(Psi - pi/2) + Fd*cos(Psi));
 Z_ddot = -g + 1/M_ver*(T*sin(theta) + Fl*sin(Psi - pi/2) + Fd*sin(Psi));
 xi = 0.9;
 wn = 1.5;
-theta_ddot  = -2*wn*xi*theta_dot-theta*wn^2 + wn^2*theta_in;  % aggiugnere rate limiter theta nel mpc
-
-% %equation without alpha
-% v_rel = sqrt((v_wind - X_dot)^2 + ...
-%     (-Z_dot)^2);
-% % v_rel = v_wind-X_dot;
-% 
-% cl = cl0 + (cl_alpha_var + (1-cl_alpha_var)*uL)*cl_alpha_max*theta;
-% cd = cd0*(1+uD)+gamma*cl^2;
-% Fl = 0.5*rho*S*cl*(v_rel)^2;
-% Fd = 0.5*rho*S*cd*(v_rel)^2;
-%    % equation uploaded with attack angle
-% 
-% 
-% X_ddot = 1/M*(T*cos(theta) + Fl*cos(theta - pi/2) + Fd*cos(theta));
-% Z_ddot = -g + 1/M*(T*sin(theta) + Fl*sin(theta - pi/2) + Fd*sin(theta));
-% xi = 0.9;
-% wn = 1.5;
-% theta_ddot  = -2*wn*xi*theta_dot-theta*wn^2 + wn^2*theta_in;  % aggiugnere rate limiter theta nel mpc
+theta_ddot  = -2*wn*xi*theta_dot-theta*wn^2 + wn^2*theta_in;  
 
 
-%% equazioni dinamiche del modello
+%% Equazioni dinamiche del modello
 
 zdot(1,1)  = X_dot;             % longitudinal velocity
 zdot(2,1)  = X_ddot;            % longitudinal acceleration

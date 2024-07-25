@@ -4,7 +4,7 @@ function [zdot, data_ground] = ground2(t, z, u, d, th)
 M       = th(1,1);      % mass aircraft
 J       = th(2,1);      % inertia
 m       = th(3,1);      % wheel mass
-k_r       = th(4,1);      % suspension stiffness
+k_r     = th(4,1);      % suspension stiffness
 k_f     = th(5,1);      % wheel stiffness
 c       = th(6,1);      % suspension damping
 c_w     = th(7,1);      % wheel damping
@@ -38,7 +38,7 @@ cl_alpha_max = 3.15;
 cl_alpha_var = 0.2;     % changed, the value we set before was 0.8
 cd0      = 0.12;         % lift coeff. when alpha=0
 gamma    = 0.0435;
-aero_c = 8.3;           % wing aerodynamic chord [m]
+
 
 
 %% definisci stati
@@ -48,20 +48,13 @@ Z          = z(3,1);    % aircraft height (m)
 Z_dot      = z(4,1);    % body z velocity (m/s)
 theta      = z(5,1);    % inertial Y position (m)
 theta_dot  = z(6,1);    % pitch velocity (rad/s)
-% z_w_r      = z(7,1);    % rear wheel height (m)
-% z_w_r_dot  = z(8,1);    % rear wheel velocity (m)
-% z_w_fr     = z(9,1);    % front wheel height (m)
-% z_w_fr_dot = z(10,1);   % front wheel velocity(m/s)
+
 
 %% definisci inputs
-% T      =     u(1,1);    % thrust force(N)
 uT     =     u(1,1);
 uL     =     u(2,1);    % flap opening 
 uD     =     u(3,1);    % air-brakes opening
-% F_brake =    u(4,1);    % brake force(N)
-% Fa_r   =     u(5,1);    % rear active suspension force
-% Fa_f   =     u(6,1);    % front active suspension force
-uB =    u(4,1);    % brake force(N)
+uB     =     u(4,1);    % brake force(N)
 uA_r   =     u(5,1);    % rear active suspension force
 uA_f   =     u(6,1);    % front active suspension force
 
@@ -70,20 +63,10 @@ F_brake = Brake_max*uB;
 Fa_r = uA_r*Fa_max;
 Fa_f = uA_f*Fa_max;
 
-% Fa_r = 0;
-% Fa_f = 0;
-
 %% Disturbances
 v_wind =     d(1,1);    % wind velocity               
 
-%% equazioni statiche
-
-% code for attack angle 
-% v_rel = sqrt((v_wind - X_dot + aero_c*theta_dot*sin(theta))^2 + ...
-%     (-Z_dot - aero_c*theta_dot*cos(theta))^2);
-% Psi = atan2(-Z_dot - aero_c*theta_dot*cos(theta), v_wind - X_dot + aero_c*theta_dot*sin(theta));
-% Psi_a = atan((-Z_dot - aero_c*theta_dot*cos(theta))/(v_wind - X_dot + aero_c*theta_dot*sin(theta)));
-% alpha = theta - Psi_a;
+%% Equazioni statiche
 
 % without theta_dot effects
 v_rel = sqrt((v_wind - X_dot)^2 + (-Z_dot)^2);  
@@ -95,15 +78,9 @@ cl = cl0 + (cl_alpha_var + (1-cl_alpha_var)*uL)*cl_alpha_max*alpha;
 cd = cd0*(1+uD)+gamma*cl^2;
 Fl = 0.5*rho*S*cl*(v_rel)^2;
 Fd = 0.5*rho*S*cd*(v_rel)^2;
-    % equation uploaded with attack angle
 
-M_ver = M+3*m;
-% Fs_r        = 2*k*(Z-z_w_r-Lr*sin(theta)-Dr)+2*Fa_r...
-%                   +2*c*(Z_dot-z_w_r_dot-Lr*cos(theta)*theta_dot); % rear suspensions total force
-% Fs_fr       = k*(Z-z_w_fr+Lf*sin(theta)-Df)+Fa_f...
-%                   +c*(Z_dot-z_w_fr_dot+Lf*cos(theta)*theta_dot);  % front suspension total force
-% Fw_r        = 2*k_w*(z_w_r-Drw)+2*c_w*(z_w_r_dot);         % rear wheel force
-% Fw_fr       = k_w*(z_w_fr-Dfw)+c_w*(z_w_fr_dot);           % front wheel force
+M_ver = M+3*m;      % Aircraft total mass
+
 
 Fs_r        = 2*k_r*(Z-Lr*sin(theta)-Dr)+2*Fa_r...
                   +2*c*(Z_dot-Lr*cos(theta)*theta_dot); % rear suspensions total force
@@ -115,8 +92,6 @@ X_ddot      = -(F_brake)/M_ver+Fl/M_ver*cos(Psi-pi/2)...          % longitudinal
 Z_ddot      = -g-Fs_r/M-Fs_fr/M+Fd/M*sin(Psi)+...        % vertical acceleration
                    Fl/M*sin(Psi-pi/2)-T/M*sin(theta);       
 theta_ddot  = -Lf/J*Fs_fr+Lr/J*Fs_r;                    % pitch angle acceleration
-% z_w_r_ddot  = -g+Fs_r/(2*m)-Fw_r/(2*m);                 % rear wheel vertical acceleration
-% z_w_fr_ddot = -g+Fs_fr/m-Fw_fr/m;                       % front wheel vertical acceleration
 
 %% equazioni dinamiche del modello
 
@@ -126,10 +101,6 @@ zdot(3,1)  = Z_dot;             % vertical velocity
 zdot(4,1)  = Z_ddot;            % vertical acceleration
 zdot(5,1)  = theta_dot;         % pitch angle rate
 zdot(6,1)  = theta_ddot;        % pitch angle acceleration
-% zdot(7,1)  = z_w_r_dot;         % rear wheel vertical velocity
-% zdot(8,1)  = z_w_r_ddot;        % rear wheel vertical acceleration
-% zdot(9,1)  = z_w_fr_dot;        % front wheel vertical velocity
-% zdot(10,1) = z_w_fr_ddot;       % front wheel vertical acceleration
 
 data_ground = [Fl;
                Fd;

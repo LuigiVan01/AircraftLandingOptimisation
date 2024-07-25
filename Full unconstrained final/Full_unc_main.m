@@ -26,7 +26,6 @@ d = 0;
 
 %% Optimization problem parameters
 Ts          =   0.01;                 % Sampling Time                        
-
 Tend_fl     =   12;                   % Flight Time                
 N_fl        =   Tend_fl/Ts;           % Samples In-Flight                      
 nu_fl       =   4;                    % In_flight inputs
@@ -53,13 +52,14 @@ z_in = 50;         % Starting height;
 zd_in = -5;        % Starting vertical speed;
 th_in = 0;         % Starting pitch;
 thd_in = 0;        % Starting pitch velocity;
-z0_fl          =   [x_in; xd_in; z_in; zd_in; th_in; thd_in];      % Initial state In-Fight
+z0_fl   =   [x_in; xd_in; z_in; zd_in; th_in; thd_in];      % Initial state In-Fight
 
 %% States stage cost parameters
-zdd_w  =   1;                                        % Vertical acceleration weight      
-thdd_w =   1*180/pi;                                 % Pitch acceleration weight
-Q_fl           =   diag([0;0;0;zdd_w;0;thdd_w]);     % In-Flight weighting Matrix   
-Q_gr           =   diag([0;0;0;zdd_w;0;thdd_w]);     % Ground weighting Matrix
+zdd_w  =   1;                                      % Vertical acceleration weight      
+thdd_w =   1*180/pi;                               % Pitch acceleration weight
+xdd_w  =   1;                                      % Longitudinal acceleration weight
+Q_fl     =   diag([0;xdd_w;0;zdd_w;0;thdd_w]);     % In-Flight weighting Matrix   
+Q_gr     =   diag([0;xdd_w;0;zdd_w;0;thdd_w]);     % Ground weighting Matrix
 
 %% Inputs stage cost parameters
 % X_fl = [U_fl];
@@ -341,6 +341,41 @@ xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
+clear t
+size=26;
+figure(15)
+t=tiledlayout(3,1);
+t(1)=nexttile;
+
+plot(t(1),time,180/pi*zd(6,:),"LineWidth",1.5);
+grid 
+title('Pitch acceleration','Interpreter','latex','FontSize',size)
+ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
+t(2)=nexttile;
+plot(t(2),time,zd(4,:),"LineWidth",1.5);
+grid 
+title('Vertical acceleration','Interpreter','latex','FontSize',size)
+ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
+t(3)=nexttile;
+plot(t(3),time,zd(2,:),"LineWidth",1.5);
+grid
+title('Longitudinal acceleration','Interpreter','latex','FontSize',size)
+xlabel('Time [s]','Interpreter','latex','FontSize',size);
+ylabel('$\ddot{X}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
+
+
 figure(5)
 hold on
 plot(time,180/pi*z(5,:),'LineWidth',1.5);
@@ -418,7 +453,6 @@ grid
 title('Front Active suspension Force','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$F_{Afr}$ [N]','Interpreter','latex','FontSize',13);
-
 
 
 

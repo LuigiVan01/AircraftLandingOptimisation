@@ -1,24 +1,25 @@
 close all
 clear all
-clc
+
 
 %% Model parameters
-M = 22e3;
-m = 130;
-J = 100e3;
-k_f = 6.73e5;
-k_r = 1.59e4;            % modified: different (smaller) value for the front stiffness
-% k_r = 6.73e5;
-c = 4066;
-c_w = 1.43e5;
-L = 10;
-S = 1/2*10^2;
-Lf = 7.76;
-Lr = 1.94;
-T_max = 6e4;
-theta_max = 10/180*pi;   % modified
-Brake_max = 4e5;         
-Fa_max = 1e5;
+
+M     = 22e3;               % aircraft mass
+m     = 130;                % wheel mass
+J     = 100e3;              % inertia
+k_f   = 6.73e5;             % front stiffness
+k_r   = 1.59e4;             % rear stiffness
+c     = 4066;               % suspension damping
+c_w   = 1.43e5;             % wheel damping
+L     = 10;                 % aircraft length
+S     = 1/2*10^2;           % aircraft surface
+Lf    = 7.76;               % front length
+Lr    = 1.94;               % rear length
+
+T_max     = 6e4;            % maximum thrust
+theta_max = 10/180*pi;      % maximum pitch
+Brake_max = 4e5;            % maximum brake force
+Fa_max    = 1e5;            % maximum active suspension force
 
 th = [M J m k_f k_r c c_w S L Lr Lf T_max theta_max Brake_max Fa_max]';
 g = 9.81;
@@ -41,6 +42,7 @@ ds_u_gr = [ds_T, ds_L, ds_D, ds_B, ds_Far, ds_Faf]';     % Downsampling the Grou
 nu_gr       =   6;
 
 %% Control problem parameters Flight
+
 Tend_fl     =   15;                          % Time horizon
 N_fl        =   Tend_fl/Ts;                  % Prediction steps
 
@@ -136,7 +138,40 @@ grid
 title('Trajectory','Interpreter','latex','FontSize',13)
 xlabel('X [m]','Interpreter','latex','FontSize',13);
 ylabel('Y [m]','Interpreter','latex','FontSize',13);
-% xlim([0 2300])
+
+clear t
+size=26;
+figure(8)
+t=tiledlayout(3,1);
+t(1)=nexttile;
+
+plot(t(1),time,180/pi*z_d(6,:),"LineWidth",1.5);
+grid 
+title('Pitch acceleration','Interpreter','latex','FontSize',size)
+ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
+t(2)=nexttile;
+plot(t(2),time,z_d(4,:),"LineWidth",1.5);
+grid 
+title('Vertical acceleration','Interpreter','latex','FontSize',size)
+ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
+t(3)=nexttile;
+plot(t(3),time,z_d(2,:),"LineWidth",1.5);
+grid
+title('Longitudinal acceleration','Interpreter','latex','FontSize',size)
+xlabel('Time [s]','Interpreter','latex','FontSize',size);
+ylabel('$\ddot{X}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
+ax = gca; 
+ax.XAxis.FontSize = 20; 
+ax.YAxis.FontSize = 20;
+
 %% Plots of the Inputs
 
 T_real = zeros(Ntot,1);
@@ -202,54 +237,55 @@ for i = 1:length(ground.Faf)
     fin = fin + ds_u_gr(6,1);
 end
 
-figure(8)
+figure(9)
 plot(time(1:end-1),T_max*T_real);
 grid
 title('Thrust','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$T$ [N]','Interpreter','latex','FontSize',13);
 
-figure(9)
+figure(10)
 plot(time(1:end-1),L_real);
 grid
 title('Lift Coefficient','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$u_L$','Interpreter','latex','FontSize',13);
 
-figure(10)
+figure(11)
 plot(time(1:end-1),D_real);
 grid
 title('Drag Coefficient','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$u_D$','Interpreter','latex','FontSize',13);
 
-figure(11)
+figure(12)
 plot(time(1:end-1),theta_max/pi*180*th_real);
 grid
 title('Pitch reference','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$\theta_in$ [deg]','Interpreter','latex','FontSize',13);
 
-figure(12)
+figure(13)
 plot(time(1:end-1),Brake_max*B_real);
 grid
 title('Brake Force','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$F_B$ [N]','Interpreter','latex','FontSize',13);
 
-figure(13)
-plot(time(1:end-1),Fa_max*Faf_real);
+figure(14)
+plot(time(1:end-1),Fa_max*Far_real);
 grid
 title('Rear Active suspension Force','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$F_{Ar}$ [N]','Interpreter','latex','FontSize',13);
 
-figure(14)
+figure(15)
 plot(time(1:end-1),Fa_max*Faf_real);
 grid
 title('Front Active suspension Force','Interpreter','latex','FontSize',13);
 xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$F_{Afr}$ [N]','Interpreter','latex','FontSize',13);
+
 
 %% Other Plots
 
@@ -260,50 +296,39 @@ v_rel = flight.v_rel;
 Rear_elastic_force = ground.Fs_r;
 Front_elastic_force = ground.Fs_fr;
 
-figure(15)
+figure(16)
 plot(time(1:end-1),Lift_force);
 grid
 title('Lift Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-figure(16)
+figure(17)
 plot(time(1:end-1),Drag_force);
 grid
 title('Drag Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-figure(17)
+figure(18)
 plot(time(1:1500),180/pi*alpha);
 grid
 title('Alpha',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-figure(18)
+figure(19)
 plot(time(1:1500),v_rel);
 grid
 title('Relative speed',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-figure(19)
+figure(20)
 plot(time(1501:end-1),Rear_elastic_force);
 grid
 title('Rear Elastic Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-figure(20)
+figure(21)
 plot(time(1501:end-1),Front_elastic_force);
 grid
 title('Front Elastic Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
-
-%% Animation
-% for i=1/Ts:5:Tend/Ts
-%     figure(21)
-%      plot([z(1,i)-Lr*cos(z(5,i)) z(1,i)+Lf*cos(z(5,i))],...
-%         [z(3,i)-Lr*sin(z(5,i)) z(3,i)+Lf*sin(z(5,i))],'-k*', 'linewidth',1);
-%      grid
-%      title(['Time: ' num2str((i-1)*Ts) ' s'])
-%      axis([z(1,i)-2 z(1,i)+8.5 z(3,i)-3 z(3,i)+3]);
-%      pause(1e-3);      
-% end

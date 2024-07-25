@@ -1,6 +1,5 @@
 function [F] = new_Flight_cost_GN(X,z0,nu,nz,d,Ts,Tend,ds_u,Q,R,z_ref,x_ref,th)
 
-% Parameters
 N = Tend/Ts;
 
 U  = X;
@@ -9,9 +8,6 @@ ds_T = ds_u(1,1);
 ds_L = ds_u(2,1);
 ds_D = ds_u(3,1);
 ds_th = ds_u(4,1);
-
-delta = 1e-4;
-tol = [delta;delta;delta;delta;delta];
 
 % Input sequence decomposition
 fin = 0;
@@ -29,7 +25,6 @@ F = [zeros(nz*(N+1),1);
      R*T;
      R*theta];
  
- % simulation
 zsim = zeros(nz*(N+1),1);
 zsim(1:nz,1) = z0;
 height = zeros(N,1);
@@ -41,6 +36,7 @@ index = ones(nu,1);
  
  for ind = 2:N+1
      cont = cont + ones(nu,1); 
+
      % input allocation
      if cont(1,1) == ds_T+1
          index(1,1) = index(1,1) + 1;
@@ -74,7 +70,7 @@ index = ones(nu,1);
                                                 u_now,d,th);
      zsim((ind-1)*nz+1:ind*nz,1)         =   ztemp;
      zd((ind-1)*nz+1:ind*nz,1)           =   zdot;
-     if ind > 9*N/10 && ind ~= N+1      % the reason for that is explained in the flight main script
+     if ind > 9*N/10 && ind ~= N+1      
          height(ind-1,1)                       =   ztemp(3,1);
      end
      

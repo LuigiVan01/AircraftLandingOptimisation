@@ -1,6 +1,5 @@
 function [F] = new_Ground_cost_GN(X,n_free,nu,nz,d,Ts,Tend,ds_u,Qdot,Q,R,x_ref,th)
 
-% Parameters
 N = Tend/Ts;
 
 z0 = [0;X(1,1);0;X(2,1);X(3,1);X(4,1)];
@@ -13,9 +12,9 @@ ds_B = ds_u(4,1);
 ds_Far = ds_u(5,1);
 ds_Faf = ds_u(6,1);
 
-tol = 5e-3;
 
 % Divide the input vector U in the different inputs  
+
 fin = 0;
 T = U(fin+1:fin+N/ds_T,1);
 fin = fin + N/ds_T;  
@@ -48,8 +47,7 @@ u_now = [T(1,1); L(1,1); D(1,1); B(1,1); Far(1,1); Faf(1,1)];
 % Counter to refresh inputs at the desired frequence
 cont = zeros(nu,1);  
 
-% Indexes of the different inputs (Since they change at different
-% frequencies they will ahve different indexes)
+% Indexes of the different inputs
 index = ones(nu,1);  
  
 % Simulation cycle
@@ -60,9 +58,9 @@ index = ones(nu,1);
 
      %Check an input can change based on the downsamplig frequence
      if cont(1,1) == ds_T+1
-         % Increse specific index
+         % Increase specific index
          index(1,1) = index(1,1) + 1;
-         % New input value in u_now (new opt. var. in the simulation)
+         % New input value in u_now 
          u_now(1,1) = T(index(1,1),1);
          cont(1,1) = 0;
      end

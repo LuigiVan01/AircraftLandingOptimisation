@@ -1,25 +1,24 @@
 clear all
 close all
-clc
 
 %% Model parameters
 
-M = 22e3;
-m = 130;
-J = 100e3;
-k_f = 6.73e5;
-k_r = 1.59e4;            % modified: different (smaller) value for the front stiffness
-% k_r = 6.73e5;
-c = 4066;
-c_w = 1.43e5;
-L = 10;
-S = 1/2*10^2;
-Lf = 7.76;
-Lr = 1.94;
-T_max = 6e4;
-theta_max = 10/180*pi;   % modified
-Brake_max = 4e5;         
-Fa_max = 1e5;
+M     = 22e3;               % aircraft mass
+m     = 130;                % wheel mass
+J     = 100e3;              % inertia
+k_f   = 6.73e5;             % front stiffness
+k_r   = 1.59e4;             % rear stiffness
+c     = 4066;               % suspension damping
+c_w   = 1.43e5;             % wheel damping
+L     = 10;                 % aircraft length
+S     = 1/2*10^2;           % aircraft surface
+Lf    = 7.76;               % front length
+Lr    = 1.94;               % rear length
+
+T_max     = 6e4;            % maximum thrust
+theta_max = 10/180*pi;      % maximum pitch
+Brake_max = 4e5;            % maximum brake force
+Fa_max    = 1e5;            % maximum active suspension force
 
 th = [M J m k_f k_r c c_w S L Lr Lf T_max theta_max Brake_max Fa_max]';
 g = 9.81;
@@ -31,13 +30,14 @@ Ts          =   0.01;                        % Sampling time
 Tend_gr     =   15;                          % Time horizon
 N_gr        =   Tend_gr/Ts;                  % Prediction steps
 
+% Downsampling the inputs
 ds_T        = 500;
 ds_L        = 150;
 ds_D        = 150;
 ds_B        = 75;
 ds_Far      = 15;
 ds_Faf      = 15;
-ds_u_gr = [ds_T, ds_L, ds_D, ds_B, ds_Far, ds_Faf]';     % Downsampling the inputs
+ds_u_gr = [ds_T, ds_L, ds_D, ds_B, ds_Far, ds_Faf]';     
 
 nz          =   6;
 nu_gr       =   6;
@@ -49,7 +49,8 @@ x_ref       =   [ 1700  ;       % upper bound
 %% Optimization parameters 
 zdd_w       =   1;                                  % weight on vertical acceleration
 thdd_w      =   1*180/pi;                           % weight on pitch acceleration
-Q_dot_gr    =   diag([0;1;0;zdd_w;0;thdd_w]);       % acceleration weighting matrix
+xdd_w       =   1;                                  % weight on longitudinal acceleration
+Q_dot_gr    =   diag([0;xdd_w;0;zdd_w;0;thdd_w]);   % acceleration weighting matrix
 Q_gr        =   diag([0;0;sqrt(1000);0;0;0]);       % state weighting matrix
 R_gr        =   0;                                  % Active suspension weight
 n_free      =   4;                                  % Degree of freedom in the initial condition optimization
@@ -86,8 +87,6 @@ A = [];
 b = [];
 
 %% Linear inequality constraint definition
-% C = zeros(2*length(U0)+2*length(U0)+4,length(X0));
-% d = zeros(2*length(U0)+2*length(U0)+2*length(z0),1);
 
 % Rate Limiter for each input
 C_rate_lim  = zeros(2*length(U0),length(X0));       % initialization
@@ -107,8 +106,7 @@ for i = 1:nu_gr
     Nu_gr(i,1) = N_gr/ds_u_gr(i,1);             % Compute the number of samples for the input 
     l = l + 2*Nu_gr(i,1);                       % Ending index
     
-    %% Rate limiter
-
+   
     % Compute the matrix representing the rate limiter for the specific input group
     C_rate_lim(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
         gen_rate_lim_mat(Nu_gr(i,1)); 
@@ -116,14 +114,12 @@ for i = 1:nu_gr
     % Compute the matrix representing the known term of the rate limiter 
     d_rate_lim(fin+1:l,1) = rate_bound(i,1)*ones(2*Nu_gr(i,1),1); 
 
-    %% Lower and upper bounds on the inputs
 
     % Upper and lower bound for the input
     C_bound(fin+1:l,length(z0_free)+fin/2+1:length(z0_free)+l/2) = ...
         [-eye(Nu_gr(i,1)); eye(Nu_gr(i,1))];
     d_bound(fin+1:l,1) = [-ub_input(i,1)*ones(Nu_gr(i,1),1); lb_input(i,1)*ones(Nu_gr(i,1),1)];
     
-    %% Rate limiter on the first 
 
     % starter rate limiter bound
     C_start(i,length(z0_free)+fin/2+1) = 1;
@@ -152,10 +148,6 @@ d = [-d_rate_lim;
       -ub; 
        lb;];
 
-% Final matrix without rate limiter
-% C = [C_bound; C_in_cond];
-% d = [d_bound; -ub; lb;];
-
 %% Nonlinear constraints specifications
 p = nz+2;      % number of NL equality constraints;
 q = 2;         % number of NL inequality contraints;
@@ -173,15 +165,6 @@ myoptions.ls_nitermax   =	20;
 myoptions.nitermax      =	50;
 myoptions.xsequence     =	'on';
 
-
-
-%myoptions.QPoptions     = optimoptions('quadprog','Algorithm','active-set');
-
-% BFGS options
-% myoptions.ls_tkmax      =	1;          
-% myoptions.ls_beta       =	0.5;
-% myoptions.ls_c          =	0.1;
-
 tic
 [xstar,fxstar,niter,exitflag,xsequence] = ...
     myfmincon(@(X_gr)new_Ground_cost(X_gr,n_free,nu_gr,nz,d,Ts,Tend_gr,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th),...
@@ -195,67 +178,6 @@ save ref_for_flight.mat z0_ref
 
 U_star = xstar(n_free+1:end,1);
 
-%% Debug lin constr (ignore this section)
-% Code to check the feasibility of the linear constrained problem
-
-% A_f = C_rate_lim;
-% b_f = d_rate_lim;
-% Aeq = A;
-% beq = b;
-% 
-% up_b = [ub; zeros(length(U0),1)];
-% low_b = [lb; zeros(length(U0),1)];
-% 
-% s = n_free;
-% for i=1:nu_gr
-%     up_b(s+1:s+Nu_gr(i,1)) = ub_input(i,1)*ones(Nu_gr(i,1),1);
-%     low_b(s+1:s+Nu_gr(i,1)) = lb_input(i,1)*ones(Nu_gr(i,1),1);
-%     s = s + Nu_gr(i,1);
-% end
-% 
-% f = zeros(size(X0)); % assumes x0 is the initial point
-% Xnew = linprog(f,A_f,b_f,Aeq,beq,low_b,up_b);
-
-%% Debug nonlincon (ignore this section)
-% code to find a feasible solution of the full constrained problem
-
-% X0_n = (up_b + low_b)/3;
-% options = optimoptions("fmincon","Algorithm","interior-point","Display" ...
-%     ,"iter","HessianApproximation","bfgs","ScaleProblem",true,"MAxFunctionEvaluations",5e3);
-% 
-% nonlcon = @(X_gr)non_linconstr(X_gr,n_free,nu_gr,nz,d,Ts,Tend_gr,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th);
-% [xstar,fxstar,niter,exitflag,xsequence] = ...
-%     fmincon(@(X_gr)0,...
-%     X0_n,A_f,b_f,Aeq,beq,low_b,up_b,nonlcon,options);
-% X0 = xstar;
-%% fmincon solution
-
-% up_b = [ub; zeros(length(U0),1)];
-% low_b = [lb; zeros(length(U0),1)];
-% 
-% s = n_free;
-% for i=1:nu_gr
-%     up_b(s+1:s+Nu_gr(i,1)) = ub_input(i,1)*ones(Nu_gr(i,1),1);
-%     low_b(s+1:s+Nu_gr(i,1)) = lb_input(i,1)*ones(Nu_gr(i,1),1);
-%     s = s + Nu_gr(i,1);
-% end
-% 
-% A_f = C_rate_lim;
-% b_f = d_rate_lim;
-% Aeq = A;
-% beq = b;
-% 
-% nonlcon = @(X_gr)non_linconstr(X_gr,n_free,nu_gr,nz,d,Ts,Tend_gr,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th);
-% 
-% options = optimoptions("fmincon","Algorithm","sqp","Display" ...
-%     ,"iter","HessianApproximation","bfgs","ScaleProblem",true,"MAxFunctionEvaluations",5e3);
-% 
-% [xstar,fxstar,niter,exitflag,xsequence] = ...
-%     fmincon(@(X_gr)new_Ground_cost_fmincon(X_gr,n_free,nu_gr,nz,d,Ts,Tend_gr,ds_u_gr,Q_dot_gr,Q_gr,R_gr,x_ref,th),...
-%     X0,A_f,b_f,Aeq,beq,low_b,up_b,nonlcon,options);
-% 
-% z0_star = xstar(1:n_free,1);
-% U_star = xstar(n_free+1:end,1);
 
 %% Results
 
@@ -355,6 +277,7 @@ grid
 title('Trajectory',"Interpreter","Latex")
 
 %% Plots of the inputs
+
 fin = 0;
 for i = 1:length(Tstar)
     T_real(fin+1:fin+ds_u_gr(1,1),1) = repmat(Tstar(i,1),ds_u_gr(1,1),1);

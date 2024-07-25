@@ -1,23 +1,24 @@
 clear all
 close all
-clc
 
 %% Model parameters
-M = 22e3;
-m = 130;
-J = 100e3;
-k_f = 6.73e5;
-k_r = 1.59e4;            % modified: different (smaller) value for the front stiffness
-c = 4066;
-c_w = 1.43e5;
-L = 10;
-S = 1/2*10^2;
-Lf = 7.76;
-Lr = 1.94;
-T_max = 6e4;
-theta_max = 10/180*pi;   % modified
-Brake_max = 4e5;
-Fa_max = 1e5;
+
+M     = 22e3;               % aircraft mass
+m     = 130;                % wheel mass
+J     = 100e3;              % inertia
+k_f   = 6.73e5;             % front stiffness
+k_r   = 1.59e4;             % rear stiffness
+c     = 4066;               % suspension damping
+c_w   = 1.43e5;             % wheel damping
+L     = 10;                 % aircraft length
+S     = 1/2*10^2;           % aircraft surface
+Lf    = 7.76;               % front length
+Lr    = 1.94;               % rear length
+
+T_max     = 6e4;            % maximum thrust
+theta_max = 10/180*pi;      % maximum pitch
+Brake_max = 4e5;            % maximum brake force
+Fa_max    = 1e5;            % maximum active suspension force
 
 th = [M J m k_f k_r c c_w S L Lr Lf T_max theta_max Brake_max Fa_max]';
 g = 9.81;
@@ -29,11 +30,12 @@ Ts          =   0.01;                        % Sampling time
 Tend_fl     =   15;                          % Time horizon
 N_fl        =   Tend_fl/Ts;                  % Prediction steps
 
+% Downsampling the inputs
 ds_T        = 50;
 ds_L        = 50;
 ds_D        = 100;
 ds_theta    = 25;
-ds_u_fl = [ds_T, ds_L, ds_D, ds_theta]';     % Downsampling the inputs
+ds_u_fl = [ds_T, ds_L, ds_D, ds_theta]';     
 
 nz          =   6;
 nu_fl       =   4;
@@ -56,13 +58,12 @@ z0_fl = [0; hor_speed_in; height_in; vert_speed_in; pitch_in; pitch_dot_in];
 load('ref_for_flight.mat');            % Results of the Ground optimization
 z_ref = z0_ref;
 
-% z_ref = [0; 90; 0; -0.3; 2*pi/180; -0.0848922352164738];  % if you want
-% to try other different targets
-
 %% Optimization parameters 
+
 zdd_w       =   1;                                  % weight on vertical acceleration
 thdd_w      =   1*180/pi;                           % weight on pitch acceleration
-Q_fl        =   diag([0;0;0;zdd_w;0;thdd_w]);       % state weighting matrix
+xdd_w       =   1;                                  % weight on longitudinal acceleration
+Q_fl        =   diag([0;xdd_w;0;zdd_w;0;thdd_w]);   % state weighting matrix
 R_fl        =   1;                                  % Input weight: Thrust && "flare" penalization
 
 %% Initial Guess
@@ -108,11 +109,9 @@ lb_input = [0;0;0;-1];                          % lower bounds for the input seq
 %% Linear equality constraint parameters
 
 A  = [];
-b = [];
+b  = [];
 
 %% Linear inequality constraint parameters
-% C = zeros(2*length(U0)+2*length(U0)+4,length(X0));
-% d = zeros(2*length(U0)+2*length(U0)+2*length(z0),1);
 
 % Rate Limiter for each input
 C_rate_lim = zeros(2*length(U0),length(X0));    % initialization
@@ -145,9 +144,6 @@ end
 C = [C_rate_lim; C_bound];
 d = [-d_rate_lim; d_bound];
 
-% Final matrix without rate limiters
-% C = [C_bound];
-% d = [d_bound];
 
 %% Nonlinear constraints specifications
 
@@ -174,42 +170,12 @@ myoptions.ls_nitermax   =	20;
 myoptions.nitermax      =	50;
 myoptions.xsequence     =	'on';
 
-% BFGS options
-% myoptions.ls_tkmax      =	1;          
-% myoptions.ls_beta       =	0.5;
-% myoptions.ls_c          =	0.1;
 
 tic
 [xstar,fxstar,niter,exitflag,xsequence] = ...
     myfmincon(@(X_fl)new_Flight_cost(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,th),...
     X0,A,b,C,d,p,q,myoptions);
 toc
-
-%% fmincon solution
-% 
-% up_b = [zeros(length(U0),1)];
-% low_b = [zeros(length(U0),1)];
-% 
-% s = 0;
-% for i=1:nu_fl
-%     up_b(s+1:s+Nu_fl(i,1)) = ub_input(i,1)*ones(Nu_fl(i,1),1);
-%     low_b(s+1:s+Nu_fl(i,1)) = lb_input(i,1)*ones(Nu_fl(i,1),1);
-%     s = s + Nu_fl(i,1);
-% end
-% 
-% A_f = C_rate_lim;
-% b_f = d_rate_lim;
-% Aeq = A;
-% beq = b;
-% 
-% nonlcon = @(X_fl)non_linconstr_fl(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,th);
-% 
-% options = optimoptions("fmincon","Algorithm","sqp","Display" ...
-%     ,"iter","HessianApproximation","bfgs","ScaleProblem",true,"MAxFunctionEvaluations",5e3);
-% 
-% [xstar,fxstar,niter,exitflag,xsequence] = ...
-%     fmincon(@(X_fl)new_Flight_cost_fmincon(X_fl,z0_fl,nu_fl,nz,d,Ts,Tend_fl,ds_u_fl,Q_fl,R_fl,z_ref,th),...
-%     X0,A_f,b_f,Aeq,beq,low_b,up_b,nonlcon,options);
 
 %% Results
 
