@@ -66,7 +66,7 @@ load('Result_Ground.mat');
 
 ground.sim(1,:) = ground.sim(1,:) + flight.sim(1,end);
 
-z = [flight.sim(1:nz,:), ground.sim(1:nz,2:end)];
+z   = [flight.sim(1:nz,:), ground.sim(1:nz,2:end)];
 z_d = [flight.sim(nz+1:2*nz,:), ground.sim(nz+1:2*nz,2:end)];
 
 time = 0:Ts:Tend;
@@ -139,46 +139,40 @@ title('Trajectory','Interpreter','latex','FontSize',13)
 xlabel('X [m]','Interpreter','latex','FontSize',13);
 ylabel('Y [m]','Interpreter','latex','FontSize',13);
 
-clear t
-size=26;
+
+
 figure(8)
-t=tiledlayout(3,1);
-t(1)=nexttile;
 
-plot(t(1),time,180/pi*z_d(6,:),"LineWidth",1.5);
+% First subplot for Pitch acceleration
+subplot(3,1,1);
+plot(time, 180/pi*z_d(6,:), 'LineWidth', 1);
 grid 
-title('Pitch acceleration','Interpreter','latex','FontSize',size)
-ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
+title('Pitch acceleration', 'Interpreter', 'latex', 'FontSize', 13);
+ylabel('$\ddot{\theta}$ [$deg/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
 
-t(2)=nexttile;
-plot(t(2),time,z_d(4,:),"LineWidth",1.5);
+% Second subplot for Vertical acceleration
+subplot(3,1,2);
+plot(time, z_d(4,:), 'LineWidth', 1);
 grid 
-title('Vertical acceleration','Interpreter','latex','FontSize',size)
-ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
+title('Vertical acceleration', 'Interpreter', 'latex', 'FontSize', 13);
+ylabel('$\ddot{Z}$ [$m/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
 
-t(3)=nexttile;
-plot(t(3),time,z_d(2,:),"LineWidth",1.5);
+% Third subplot for Longitudinal acceleration
+subplot(3,1,3);
+plot(time, z_d(2,:), 'LineWidth', 1);
 grid
-title('Longitudinal acceleration','Interpreter','latex','FontSize',size)
-xlabel('Time [s]','Interpreter','latex','FontSize',size);
-ylabel('$\ddot{X}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
+title('Longitudinal acceleration', 'Interpreter', 'latex', 'FontSize', 13);
+xlabel('Time [s]', 'Interpreter', 'latex', 'FontSize', 13);
+ylabel('$\ddot{X}$ [$m/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
+
 
 %% Plots of the Inputs
 
-T_real = zeros(Ntot,1);
-L_real = zeros(Ntot,1);
-D_real = zeros(Ntot,1);
-B_real = zeros(Ntot,1);
-th_real = zeros(Ntot,1);
+T_real   = zeros(Ntot,1);
+L_real   = zeros(Ntot,1);
+D_real   = zeros(Ntot,1);
+B_real   = zeros(Ntot,1);
+th_real  = zeros(Ntot,1);
 Far_real = zeros(Ntot,1);
 Faf_real = zeros(Ntot,1);
 

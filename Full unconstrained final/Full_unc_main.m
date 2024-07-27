@@ -114,7 +114,7 @@ for i = 1:length(R_gr_b)
 end
 
 %% Terminal weights
-Qf_fl          =   diag([0;1e3;1e3;1e3;1e3;1e3]);     % Terminal weighting Matrix for In-Flight states        
+Qf_fl          =   diag([0;0;1;0;1;0]);               % Terminal weighting Matrix for In-Flight states        
 Qf_dot_gr      =   diag([1e3;1e3;1e3;1e3;1e3;1e3]);   % Terminal weighting Matrix for final equilibrium
 Qf_gr          =   diag([0;0;0;0;0;0]);               % Terminal weighting Matrix for Ground states        
 
@@ -174,9 +174,6 @@ U_grstar = [u_star_td; u_star_b];                    % Overall Optimal Ground in
 
 z_ref = z0_star;    % Reference built for the In-Flight optimization
 
-%% Save the result for the new (improved) initial guess
-% Xstar = X_grstar;
-% save initialguess_gr.mat Xstar
 
 %% Flight Optimization parameters
 myoptions   =   myoptimset;
@@ -185,12 +182,8 @@ myoptions.ls_beta       = 0.3;
 % myoptions.tolgrad    	=	1e-6;
 % myoptions.tolfun    	=	1e-18;
 % myoptions.tolX       	=	1e-18;
-% normal
 myoptions.gradmethod    = 'CD';
 myoptions.graddx        = 2^-17;
-% user provided
-% myoptions.gradmethod    = 'UP';
-% myoptions.graddx        = eps^(1/3);
 myoptions.nitermax      = 50;
 myoptions.Hessmethod    = 'GN';
 myoptions.BFGS_gamma  	= 1e-1;
@@ -341,39 +334,30 @@ xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',13);
 hold off
 
-clear t
-size=26;
+
 figure(15)
-t=tiledlayout(3,1);
-t(1)=nexttile;
 
-plot(t(1),time,180/pi*zd(6,:),"LineWidth",1.5);
-grid 
-title('Pitch acceleration','Interpreter','latex','FontSize',size)
-ylabel('$\ddot{\theta}$ [$deg/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
+% First subplot for Pitch acceleration
+subplot(3,1,1); % This creates a 3-row, 1-column grid of subplots and selects the 1st subplot.
+plot(time, 180/pi*zd(6,:), 'LineWidth', 1);
+grid on
+title('Pitch acceleration', 'Interpreter', 'latex', 'FontSize', 13)
+ylabel('$\ddot{\theta}$ [$deg/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
 
-t(2)=nexttile;
-plot(t(2),time,zd(4,:),"LineWidth",1.5);
-grid 
-title('Vertical acceleration','Interpreter','latex','FontSize',size)
-ylabel('$\ddot{Z}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
+% Second subplot for Vertical acceleration
+subplot(3,1,2); % Selects the 2nd subplot.
+plot(time, zd(4,:), 'LineWidth', 1);
+grid on
+title('Vertical acceleration', 'Interpreter', 'latex', 'FontSize', 13)
+ylabel('$\ddot{Z}$ [$m/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
 
-t(3)=nexttile;
-plot(t(3),time,zd(2,:),"LineWidth",1.5);
-grid
-title('Longitudinal acceleration','Interpreter','latex','FontSize',size)
-xlabel('Time [s]','Interpreter','latex','FontSize',size);
-ylabel('$\ddot{X}$ [$m/s^{2}$]','Interpreter','latex','FontSize',size);
-ax = gca; 
-ax.XAxis.FontSize = 20; 
-ax.YAxis.FontSize = 20;
-
+% Third subplot for Longitudinal acceleration
+subplot(3,1,3); % Selects the 3rd subplot.
+plot(time, zd(2,:), 'LineWidth', 1);
+grid on
+title('Longitudinal acceleration', 'Interpreter', 'latex', 'FontSize', 13)
+xlabel('Time [s]', 'Interpreter', 'latex', 'FontSize', 13);
+ylabel('$\ddot{X}$ [$m/s^{2}$]', 'Interpreter', 'latex', 'FontSize', 13);
 
 
 figure(5)
@@ -455,12 +439,6 @@ xlabel('Time [s]','Interpreter','latex','FontSize',13);
 ylabel('$F_{Afr}$ [N]','Interpreter','latex','FontSize',13);
 
 
-
-[f2_Bellman,zsim2]=Ground_cost(X_grstar,n_free,nu_gr,d,Ts,Tend_td,Tend_b,ds_u_td,ds_u_b,Q_gr,R_gr_td,Qf_gr,Qf_dot_gr,x_ref,th);
-f2_Bellman
-[f1_Bellman,zsim1]=Flight_cost(X_flstar,z0_fl,d,Ts,Tend_fl,ds_u,Q_fl,R_fl,Qf_fl,z_ref,th);
-f1_Bellman
-f_Bellman=f1_Bellman+f2_Bellman
 
 
 %% Animation

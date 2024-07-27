@@ -34,7 +34,7 @@ for i = 1:N/ds_u
 end
 
 % Update the terminal cost
-%F(nz*N+1:nz*N+nz,1)    =   Qf*(zsim(N*nz+1:nz*(N+1),1) - z_ref(:,1));
+F(nz*N+1:nz*N+nz,1)    =   Qf*(zsim(N*nz+1:nz*(N+1),1) - z_ref(:,1));
 
 %Update barrier function
 F(nz*(N+1)+1:end,1) = barrier_input_fl(U,nu,height);
