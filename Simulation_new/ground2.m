@@ -30,8 +30,8 @@ b_eq = [z_bar*(2*k_r + k_f) + sin(theta_bar)*(Lf*k_f - 2*Lr*k_r) + M_ver*g;
         z_bar*(Lf*k_f - 2*Lr*k_r) - sin(theta_bar)*(Lf^2*k_f + 2*Lr^2*k_r)];
         
 Delta = A_eq\b_eq;
-Dr = Delta(1,1);
-Df = Delta(2,1);
+Dr = Delta(1,1)
+Df = Delta(2,1)
 
 cl0     = 0.63;         % lift coeff. when alpha=0
 cl_alpha_max = 3.15;
