@@ -198,7 +198,7 @@ grid
 legend('FontSize',13,'Interpreter','latex');
 title('Vertical acceleration overview',"Interpreter","Latex",'FontSize',13);
 xlabel('Time [s]',"Interpreter","Latex", 'FontSize',13);
-ylabel('$\ddot{Z}$ $[m \cdot s^{-1}]$', 'Interpreter','latex','FontSize',13);
+ylabel('$\ddot{Z}$ [$m/s^{2}$]', 'Interpreter','latex','FontSize',13);
 hold off
 
 figure(5)

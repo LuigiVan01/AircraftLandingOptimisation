@@ -107,8 +107,8 @@ index = ones(nu,1);
      % Update the cost function
      F((ind-2)*nz+1:(ind-1)*nz,1)          =   Qdot*zdot/sqrt(N);
 
-     % Include weighted the pitch to force it to go to zero 
-     % (This is weighted only from half simulation)
+     % The height is weighted strating from half simulation in oreder to
+     % help the aircraft to recover horizontal postion faster
      if ind > N/2
          F((N+ind-2)*nz+1:(N+ind-1)*nz,1)      =   Q*ztemp/sqrt(N);
      end

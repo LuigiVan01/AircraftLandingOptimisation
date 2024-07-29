@@ -40,7 +40,7 @@ theta_dot  = z(6,1);    % pitch velocity (rad/s)
 uT          =     u(1,1);     % thrust force(N)
 uL          =     u(2,1);      % flap opening 
 uD          =     u(3,1);      % air-brakes opening 
-u_theta_in =   u(4,1);
+u_theta_in  =     u(4,1);
 T = uT*T_max;
 theta_in = u_theta_in*theta_max;
 

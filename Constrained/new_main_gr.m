@@ -335,7 +335,7 @@ title('Brake Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
 figure(13)
-plot(Fa_max*Faf_real);
+plot(Fa_max*Far_real);
 title('Rear Active suspension Force',"Interpreter","Latex");
 xlabel('Time',"Interpreter","Latex");
 
