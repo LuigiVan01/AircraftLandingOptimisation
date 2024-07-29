@@ -117,7 +117,7 @@ index = ones(nu,1);
 
 % nonlinear equalities 
 ceq = [zdot;            %Final state derivative equal to zero
-       zsim(end-3,1);   %Final speed equal to zero
+       zsim(end-3,1);   %Final height equal to zero
        zsim(end-1,1)    %Final pitch equal to zero
        ];
 
