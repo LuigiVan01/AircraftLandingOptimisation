@@ -1,0 +1,29 @@
+Ths folder contains the scripts for the aircraft landing optimization project.
+
+The main folder is divided in three sub-folders:
+-Simulation_new
+-Full unconstrained final
+-Constrained
+
+####################
+## Simulation_new ##
+####################
+
+This sub-folder contains the scripts to perform analysis on how the switching model for the landing procedure behaves.
+To use it simply open the script named fly_ground_simulation.m in MATLAB and run it.
+
+##############################
+## Full unconstrained final ##
+##############################
+
+The scripts in this sub-folder produce the results for the unconstrained version of the optimization problem.
+To use it, simply run the script named Full_unc_main.m
+
+#################
+## Constrained ##
+#################
+
+This sub-folder contains the scripts producing the final results deriving from the constrained optimizaton problem.
+To run the complete simulation just open the script named final_main.m in MATLAB and run it.
+You may also want to run separate simulations for the ground phase and the flight phase; this is possible by running the scripts
+new_main_gr.m and new_main_fl.m respectively.
