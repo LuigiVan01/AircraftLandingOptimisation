@@ -1,7 +1,7 @@
 
 ## Aircraft Landing Optimization for Enhanced Passenger Comfort
 
-### OVERVIEW
+## OVERVIEW 
 
 This project focuses on optimizing the aircraft landing process to enhance passenger comfort by reducing accelerations during landing. Utilizing advanced modeling, simulation, and constrained numerical optimization, the project aims to minimize vibrations and ensure a smooth touchdown. The project combines flight and ground dynamics into a comprehensive simulation model, allowing for detailed analysis and optimization of the landing procedure.
 
@@ -28,17 +28,17 @@ The main folder is divided in three sub-folders:
 -Full unconstrained final
 -Constrained
 
-## Simulation_new ##
+### Simulation_new 
 
 This sub-folder contains the scripts to perform analysis on how the switching model for the landing procedure behaves.
 To use it simply open the script named fly_ground_simulation.m in MATLAB and run it.
-## Full unconstrained final ##
+### Full unconstrained final 
 
 
 The scripts in this sub-folder produce the results for the unconstrained version of the optimization problem.
 To use it, simply run the script named Full_unc_main.m
 
-## Constrained ##
+### Constrained 
 
 This sub-folder contains the scripts producing the final results deriving from the constrained optimizaton problem.
 To run the complete simulation just open the script named final_main.m in MATLAB and run it.
