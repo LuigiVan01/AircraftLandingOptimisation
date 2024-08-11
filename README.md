@@ -17,9 +17,6 @@ This project focuses on optimizing the aircraft landing process to enhance passe
 - **Optimization Algorithms**: Implements both unconstrained and constrained optimization methods to find the optimal control strategies.
 - **Numerical Methods**: Employs variable and fixed-step numerical integration methods to simulate the system dynamics.
 
-## Notes
-The document report.pdf contains a detailed analysis of the project
-
 
 ## CODES
 
@@ -45,3 +42,5 @@ To run the complete simulation just open the script named final_main.m in MATLAB
 You may also want to run separate simulations for the ground phase and the flight phase; this is possible by running the scripts
 new_main_gr.m and new_main_fl.m respectively.
 
+## Notes
+The document report.pdf contains a detailed analysis of the project
