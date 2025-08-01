@@ -54,13 +54,13 @@ The optimization process presented several distinct challenges:
 
 3.  **High Computational Load:** The large number of optimization variables (control inputs at each time step) makes the problem computationally expensive. To make the problem tractable, the control inputs were down-sampled, meaning they are held constant over several simulation time steps. This significantly reduces the number of variables for the solver to handle while maintaining effective control.
 
-## Some Results
+### Some Results
 
 The dynamic of the system with the optimal inputs applied is depicted in the following images. The aircraft lands with a flare maneuver and the accelerations experienced are maintained within typical flight levels. It is evident that the impact with the ground occurs at 15 seconds.
 
 ![Trajs](./images/traj.png)
 
-![Accels](./images/accell.png)
+![Accels](./images/accells.png)
 
 ## Repository Structure 
 
