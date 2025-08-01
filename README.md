@@ -60,7 +60,7 @@ The dynamic of the system with the optimal inputs applied is depicted in the fol
 
 ![Trajs](./images/traj.png)
 
-![Accels](./images/accells.png)
+![Accel](./images/accel.png)
 
 ## Repository Structure 
 
