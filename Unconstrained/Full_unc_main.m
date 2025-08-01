@@ -124,7 +124,7 @@ x_ref = 500;
 %% Ground Optimization parameters
 myoptions   =   myoptimset;
 myoptions.ls_beta       = 0.3;        
-% myoptions.ls_c          = 0.1;
+% myoptions.ls_c        = 0.1;
 % myoptions.tolgrad    	=	1e-6;
 % myoptions.tolfun    	=	1e-18;
 % myoptions.tolX       	=	1e-18;
@@ -151,9 +151,6 @@ U0_b          = ones(nu_gr*N_b/ds_u_b,1);
 load('initialguess_gr.mat');
 X0 = Xstar;
 
-%% Generating code (mex files) for faster computation (to be ran only once whenever Tend changes)
-% codegen Pendulum_cost -args {U,z0,d,Ts,Tend,Q,R,Qf,th}
-% codegen Flight_cost_GN -args {U0,z0,Ts,Q,R,Qf,parameters}
 
 %% Running the Ground optimization routine
 tic
@@ -210,10 +207,6 @@ X0_fl = U0_fl;
 %% Improving initial guess for the Flight optimization
 load('initialguess_fl.mat');
 X0_fl = Xstar;
-
-%% Generating code (mex files) for faster computation (to be ran only once whenever Tend changes)
-% codegen Pendulum_cost -args {U,z0,d,Ts,Tend,Q,R,Qf,th}
-% codegen Flight_cost_GN -args {U0,z0,Ts,Q,R,Qf,parameters}
 
 %% Running the Flight optimization routine
 tic
