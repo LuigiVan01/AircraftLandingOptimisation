@@ -15,7 +15,7 @@ The aircraft's dynamics change drastically between being airborne and being on t
 
 This model describes the aircraft's motion as a rigid body in a 2D plane, subject to aerodynamic, gravitational, and propulsion forces. It governs the dynamics until the moment of touchdown.
 
-![FlightModel](./images/filght.png)
+![FlightModel](./images/flight.png)
 
 **Control Inputs for the Flight Model (`u_f`):**
 *   **Thrust (`T`):** Engine propulsion force.
