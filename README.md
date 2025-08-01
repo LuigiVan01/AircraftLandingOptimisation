@@ -54,6 +54,14 @@ The optimization process presented several distinct challenges:
 
 3.  **High Computational Load:** The large number of optimization variables (control inputs at each time step) makes the problem computationally expensive. To make the problem tractable, the control inputs were down-sampled, meaning they are held constant over several simulation time steps. This significantly reduces the number of variables for the solver to handle while maintaining effective control.
 
+## Some Results
+
+The dynamic of the system with the optimal inputs applied is depicted in the following images. The aircraft lands with a flare maneuver and the accelerations experienced are maintained within typical flight levels. It is evident that the impact with the ground occurs at 15 seconds.
+
+![Trajs](./images/traj.png)
+
+![Accels](./images/accell.png)
+
 ## Repository Structure 
 
 
@@ -62,25 +70,19 @@ The repository  is divided into three sub-folders:
 - `Unconstrained`
 - `Constrained`
 
----
 ### `Simulation`
----
 
 This folder contains the scripts to perform an analysis of how the switching model for the landing procedure behaves.
 
 To use it, simply open the script named `fly_ground_simulation.m` in MATLAB and run it.
 
----
 ### `Unconstrained`
----
 
 The scripts in this sub-folder produce the results for the unconstrained version of the optimization problem.
 
 To use it, simply run the script named `Full_unc_main.m`.
 
----
 ### `Constrained`
----
 
 This sub-folder contains the scripts that produce the final results derived from the constrained optimization problem.
 
